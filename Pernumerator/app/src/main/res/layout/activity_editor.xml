@@ -41,30 +41,30 @@
 
             <!-- Name field -->
             <EditText
-                android:id="@+id/edit_pet_name"
-                android:hint="@string/hint_pet_name"
+                android:id="@+id/edit_item_name"
+                android:hint="@string/hint_item_name"
                 android:inputType="textCapWords"
                 style="@style/EditorFieldStyle" />
 
-            <!-- Breed field -->
+            <!-- Type field -->
             <EditText
-                android:id="@+id/edit_pet_breed"
-                android:hint="@string/hint_pet_breed"
+                android:id="@+id/edit_item_type"
+                android:hint="@string/hint_item_type"
                 android:inputType="textCapWords"
                 style="@style/EditorFieldStyle" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Gender category -->
+    <!-- Owner category -->
     <LinearLayout
-        android:id="@+id/container_gender"
+        android:id="@+id/container_owner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <!-- Label -->
         <TextView
-            android:text="@string/category_gender"
+            android:text="@string/category_owner"
             style="@style/CategoryStyle" />
 
         <!-- Input field -->
@@ -74,9 +74,9 @@
             android:layout_weight="2"
             android:orientation="vertical">
 
-            <!-- Gender drop-down spinner -->
+            <!-- Owner drop-down spinner -->
             <Spinner
-                android:id="@+id/spinner_gender"
+                android:id="@+id/spinner_owner"
                 android:layout_height="48dp"
                 android:layout_width="wrap_content"
                 android:paddingRight="16dp"
@@ -105,15 +105,15 @@
 
             <!-- Weight field -->
             <EditText
-                android:id="@+id/edit_pet_weight"
-                android:hint="@string/hint_pet_weight"
+                android:id="@+id/edit_item_weight"
+                android:hint="@string/hint_item_weight"
                 android:inputType="number"
                 style="@style/EditorFieldStyle" />
 
             <!-- Units for weight (kg) -->
             <TextView
                 android:id="@+id/label_weight_units"
-                android:text="@string/unit_pet_weight"
+                android:text="@string/unit_item_weight"
                 style="@style/EditorUnitsStyle"/>
         </RelativeLayout>
     </LinearLayout>
