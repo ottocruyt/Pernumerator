@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.pets;
+package be.android.pernumerator;
 
 import android.app.LoaderManager;
 import android.content.ContentUris;
@@ -33,13 +33,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.example.android.pets.data.ItemContract.ItemEntry;
+import be.android.pernumerator.data.ItemContract;
 
-//TODO rename package name
 //TODO add type spinner with possibility of adding a new one
 //TODO add barcode field
 //TODO add dimension field
-//TODO change view in catalog activity to show everything sorted by type
+//TODO editor not enable for viewing
+//TODO add image support
 
 /**
  * Displays list of items that were entered and stored in the app.
@@ -90,9 +90,9 @@ public class CatalogActivity extends AppCompatActivity implements
                 // Form the content URI that represents the specific item that was clicked on,
                 // by appending the "id" (passed as input to this method) onto the
                 // {@link ItemEntry#CONTENT_URI}.
-                // For example, the URI would be "content://com.example.android.pets/pets/2"
+                // For example, the URI would be "content://be.android.pernumerator/be.android.pernumerator/2"
                 // if the item with ID 2 was clicked on.
-                Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
+                Uri currentItemUri = ContentUris.withAppendedId(ItemContract.ItemEntry.CONTENT_URI, id);
 
                 // Set the URI on the data field of the intent
                 intent.setData(currentItemUri);
@@ -113,24 +113,24 @@ public class CatalogActivity extends AppCompatActivity implements
         // Create a ContentValues object where column names are the keys,
         // and oneplus 5T's item attributes are the values.
         ContentValues values = new ContentValues();
-        values.put(ItemEntry.COLUMN_ITEM_NAME, "Oneplus 5T");
-        values.put(ItemEntry.COLUMN_ITEM_TYPE, "Electronics");
-        values.put(ItemEntry.COLUMN_ITEM_OWNER, ItemEntry.OWNER_OTTO);
-        values.put(ItemEntry.COLUMN_ITEM_WEIGHT, 0.162);
-        values.put(ItemEntry.COLUMN_ITEM_PRICE, 10);
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_NAME, "Oneplus 5T");
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_TYPE, "Electronics");
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_OWNER, ItemContract.ItemEntry.OWNER_OTTO);
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_WEIGHT, 0.162);
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_PRICE, 10);
 
         // Insert a new row for Oneplus into the provider using the ContentResolver.
         // Use the {@link ItemEntry#CONTENT_URI} to indicate that we want to insert
         // into the items database table.
         // Receive the new content URI that will allow us to access Oneplus's data in the future.
-        Uri newUri = getContentResolver().insert(ItemEntry.CONTENT_URI, values);
+        Uri newUri = getContentResolver().insert(ItemContract.ItemEntry.CONTENT_URI, values);
     }
 
     /**
      * Helper method to delete all items in the database.
      */
     private void deleteAllItems() {
-        int rowsDeleted = getContentResolver().delete(ItemEntry.CONTENT_URI, null, null);
+        int rowsDeleted = getContentResolver().delete(ItemContract.ItemEntry.CONTENT_URI, null, null);
         Log.v("CatalogActivity", rowsDeleted + " rows deleted from item database");
     }
 
@@ -162,16 +162,16 @@ public class CatalogActivity extends AppCompatActivity implements
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         // Define a projection that specifies the columns from the table we care about.
         String[] projection = {
-                ItemEntry._ID,
-                ItemEntry.COLUMN_ITEM_NAME,
-                ItemEntry.COLUMN_ITEM_TYPE };
+                ItemContract.ItemEntry._ID,
+                ItemContract.ItemEntry.COLUMN_ITEM_NAME,
+                ItemContract.ItemEntry.COLUMN_ITEM_TYPE };
         // Define the sort method of the query
 
-        String sortOrder = ItemEntry.COLUMN_ITEM_TYPE;
+        String sortOrder = ItemContract.ItemEntry.COLUMN_ITEM_TYPE;
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
-                ItemEntry.CONTENT_URI,   // Provider content URI to query
+                ItemContract.ItemEntry.CONTENT_URI,   // Provider content URI to query
                 projection,             // Columns to include in the resulting Cursor
                 null,                   // No selection clause
                 null,                   // No selection arguments

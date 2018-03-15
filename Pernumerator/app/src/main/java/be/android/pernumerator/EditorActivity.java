@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.pets;
+package be.android.pernumerator;
 
 import android.app.AlertDialog;
 import android.app.LoaderManager;
@@ -38,9 +38,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.android.pets.data.ItemContract.ItemEntry;
-
 import java.text.DecimalFormat;
+
+import be.android.pernumerator.data.ItemContract;
 
 /**
  * Allows user to create a new item or edit an existing one.
@@ -48,7 +48,7 @@ import java.text.DecimalFormat;
 public class EditorActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    /** Identifier for the pet data loader */
+    /** Identifier for the item data loader */
     private static final int EXISTING_ITEM_LOADER = 0;
 
     /** Content URI for the existing item (null if it's a new item) */
@@ -71,10 +71,10 @@ public class EditorActivity extends AppCompatActivity implements
 
     /**
      * Owner of the item. The possible valid values are in the ItemContract.java file:
-     * {@link ItemEntry#OWNER_BOTH}, {@link ItemEntry#OWNER_OTTO}, {@link ItemEntry#OWNER_LINDE} or
-     * {@link ItemEntry#OWNER_OTHER}.
+     * {@link ItemContract.ItemEntry#OWNER_BOTH}, {@link ItemContract.ItemEntry#OWNER_OTTO}, {@link ItemContract.ItemEntry#OWNER_LINDE} or
+     * {@link ItemContract.ItemEntry#OWNER_OTHER}.
      */
-    private int mOwner = ItemEntry.OWNER_BOTH;
+    private int mOwner = ItemContract.ItemEntry.OWNER_BOTH;
 
     /** Boolean flag that keeps track of whether the item has been edited (true) or not (false) */
     private boolean mItemHasChanged = false;
@@ -160,13 +160,13 @@ public class EditorActivity extends AppCompatActivity implements
                 String selection = (String) parent.getItemAtPosition(position);
                 if (!TextUtils.isEmpty(selection)) {
                     if (selection.equals(getString(R.string.owner_otto))) {
-                        mOwner = ItemEntry.OWNER_OTTO;
+                        mOwner = ItemContract.ItemEntry.OWNER_OTTO;
                     } else if (selection.equals(getString(R.string.owner_linde))) {
-                        mOwner = ItemEntry.OWNER_LINDE;
+                        mOwner = ItemContract.ItemEntry.OWNER_LINDE;
                     } else if (selection.equals(getString(R.string.owner_other))) {
-                        mOwner = ItemEntry.OWNER_OTHER;
+                        mOwner = ItemContract.ItemEntry.OWNER_OTHER;
                     } else {
-                        mOwner = ItemEntry.OWNER_BOTH;
+                        mOwner = ItemContract.ItemEntry.OWNER_BOTH;
                     }
                 }
             }
@@ -174,7 +174,7 @@ public class EditorActivity extends AppCompatActivity implements
             // Because AdapterView is an abstract class, onNothingSelected must be defined
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                mOwner = ItemEntry.OWNER_BOTH;
+                mOwner = ItemContract.ItemEntry.OWNER_BOTH;
             }
         });
     }
@@ -197,7 +197,7 @@ public class EditorActivity extends AppCompatActivity implements
         // and check if all the fields in the editor are blank
         if (mCurrentItemUri == null &&
                 TextUtils.isEmpty(nameString) && TextUtils.isEmpty(typeString) &&
-                TextUtils.isEmpty(weightString) && mOwner == ItemEntry.OWNER_BOTH && TextUtils.isEmpty(priceString)) {
+                TextUtils.isEmpty(weightString) && mOwner == ItemContract.ItemEntry.OWNER_BOTH && TextUtils.isEmpty(priceString)) {
             // Since no fields were modified, we can return early without creating a new item.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             // -> even if you press V, if nothing is changed it will just not save it and go to main
@@ -215,16 +215,16 @@ public class EditorActivity extends AppCompatActivity implements
         }
 
         ContentValues values = new ContentValues();
-        values.put(ItemEntry.COLUMN_ITEM_NAME, nameString);
-        values.put(ItemEntry.COLUMN_ITEM_TYPE, typeString);
-        values.put(ItemEntry.COLUMN_ITEM_OWNER, mOwner);
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_NAME, nameString);
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_TYPE, typeString);
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_OWNER, mOwner);
         // If the weight is not provided by the user, don't try to parse the string into an
         // float value. Use 0 by default.
         float weight = 0;
         if (!TextUtils.isEmpty(weightString)) {
             weight = Float.parseFloat(weightString);
         }
-        values.put(ItemEntry.COLUMN_ITEM_WEIGHT, weight);
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_WEIGHT, weight);
         // If the price is not provided by the user, don't try to parse the string into an
         // float value. Use 0 by default.
         float price = 0;
@@ -233,13 +233,13 @@ public class EditorActivity extends AppCompatActivity implements
         }
 
         // put it in the values
-        values.put(ItemEntry.COLUMN_ITEM_PRICE, price);
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_PRICE, price);
 
         // Determine if this is a new or existing item by checking if mCurrentItemUri is null or not
         if (mCurrentItemUri == null) {
             // This is a NEW item, so insert a new item into the provider,
             // returning the content URI for the new item.
-            Uri newUri = getContentResolver().insert(ItemEntry.CONTENT_URI, values);
+            Uri newUri = getContentResolver().insert(ItemContract.ItemEntry.CONTENT_URI, values);
 
             // Show a toast message depending on whether or not the insertion was successful.
             if (newUri == null) {
@@ -370,18 +370,18 @@ public class EditorActivity extends AppCompatActivity implements
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         // Since the editor shows all item attributes, define a projection that contains
-        // all columns from the pet table
+        // all columns from the items table
         String[] projection = {
-                ItemEntry._ID,
-                ItemEntry.COLUMN_ITEM_NAME,
-                ItemEntry.COLUMN_ITEM_TYPE,
-                ItemEntry.COLUMN_ITEM_OWNER,
-                ItemEntry.COLUMN_ITEM_WEIGHT,
-                ItemEntry.COLUMN_ITEM_PRICE};
+                ItemContract.ItemEntry._ID,
+                ItemContract.ItemEntry.COLUMN_ITEM_NAME,
+                ItemContract.ItemEntry.COLUMN_ITEM_TYPE,
+                ItemContract.ItemEntry.COLUMN_ITEM_OWNER,
+                ItemContract.ItemEntry.COLUMN_ITEM_WEIGHT,
+                ItemContract.ItemEntry.COLUMN_ITEM_PRICE};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
-                mCurrentItemUri,         // Query the content URI for the current pet
+                mCurrentItemUri,         // Query the content URI for the current item
                 projection,             // Columns to include in the resulting Cursor
                 null,                   // No selection clause
                 null,                   // No selection arguments
@@ -399,11 +399,11 @@ public class EditorActivity extends AppCompatActivity implements
         // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
             // Find the columns of item attributes that we're interested in
-            int nameColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);
-            int typeColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_TYPE);
-            int ownerColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_OWNER);
-            int weightColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_WEIGHT);
-            int priceColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE);
+            int nameColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_NAME);
+            int typeColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_TYPE);
+            int ownerColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_OWNER);
+            int weightColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_WEIGHT);
+            int priceColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_PRICE);
 
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
@@ -428,13 +428,13 @@ public class EditorActivity extends AppCompatActivity implements
             // into one of the dropdown options (0 is BOTH, 1 is OTTO, 2 is LINDE, 3 is OTHER).
             // Then call setSelection() so that option is displayed on screen as the current selection.
             switch (owner) {
-                case ItemEntry.OWNER_OTTO:
+                case ItemContract.ItemEntry.OWNER_OTTO:
                     mOwnerSpinner.setSelection(1);
                     break;
-                case ItemEntry.OWNER_LINDE:
+                case ItemContract.ItemEntry.OWNER_LINDE:
                     mOwnerSpinner.setSelection(2);
                     break;
-                case ItemEntry.OWNER_OTHER:
+                case ItemContract.ItemEntry.OWNER_OTHER:
                     mOwnerSpinner.setSelection(3);
                 default:
                     mOwnerSpinner.setSelection(0);
@@ -470,7 +470,7 @@ public class EditorActivity extends AppCompatActivity implements
         builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Keep editing" button, so dismiss the dialog
-                // and continue editing the pet.
+                // and continue editing the item.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
@@ -492,14 +492,14 @@ public class EditorActivity extends AppCompatActivity implements
         builder.setMessage(R.string.delete_dialog_msg);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Delete" button, so delete the pet.
+                // User clicked the "Delete" button, so delete the item.
                 deleteItem();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the pet.
+                // and continue editing the item.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
@@ -519,7 +519,7 @@ public class EditorActivity extends AppCompatActivity implements
         if (mCurrentItemUri != null) {
             // Call the ContentResolver to delete the item at the given content URI.
             // Pass in null for the selection and selection args because the mCurrentItemUri
-            // content URI already identifies the pet that we want.
+            // content URI already identifies the item that we want.
             int rowsDeleted = getContentResolver().delete(mCurrentItemUri, null, null);
 
             // Show a toast message depending on whether or not the delete was successful.

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.pets.data;
+package be.android.pernumerator.data;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -23,8 +23,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
-
-import com.example.android.pets.data.ItemContract.ItemEntry;
 
 /**
  * {@link ContentProvider} for Pernumerator app.
@@ -53,18 +51,18 @@ public class ItemProvider extends ContentProvider {
         // should recognize. All paths added to the UriMatcher have a corresponding code to return
         // when a match is found.
 
-        // The content URI of the form "content://com.example.android.pets/items" will map to the
+        // The content URI of the form "content://be.android.pernumerator/items" will map to the
         // integer code {@link #ITEMS}. This URI is used to provide access to MULTIPLE rows
         // of the items table.
         sUriMatcher.addURI(ItemContract.CONTENT_AUTHORITY, ItemContract.PATH_ITEMS, ITEMS);
 
-        // The content URI of the form "content://com.example.android.pets/items/#" will map to the
+        // The content URI of the form "content://be.android.pernumerator/items/#" will map to the
         // integer code {@link #ITEM_ID}. This URI is used to provide access to ONE single row
         // of the items table.
         //
         // In this case, the "#" wildcard is used where "#" can be substituted for an integer.
-        // For example, "content://com.example.android.pets/items/3" matches, but
-        // "content://com.example.android.pets/items" (without a number at the end) doesn't match.
+        // For example, "content://be.android.pernumerator/items/3" matches, but
+        // "content://be.android.pernumerator/items" (without a number at the end) doesn't match.
         sUriMatcher.addURI(ItemContract.CONTENT_AUTHORITY, ItemContract.PATH_ITEMS + "/#", ITEM_ID);
     }
 
@@ -93,24 +91,24 @@ public class ItemProvider extends ContentProvider {
                 // For the ITEMS code, query the items table directly with the given
                 // projection, selection, selection arguments, and sort order. The cursor
                 // could contain multiple rows of the items table.
-                cursor = database.query(ItemEntry.TABLE_NAME, projection, selection, selectionArgs,
+                cursor = database.query(ItemContract.ItemEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
             case ITEM_ID:
                 // For the ITEM_ID code, extract out the ID from the URI.
-                // For an example URI such as "content://com.example.android.pets/items/3",
+                // For an example URI such as "content://be.android.pernumerator/items/3",
                 // the selection will be "_id=?" and the selection argument will be a
                 // String array containing the actual ID of 3 in this case.
                 //
                 // For every "?" in the selection, we need to have an element in the selection
                 // arguments that will fill in the "?". Since we have 1 question mark in the
                 // selection, we have 1 String in the selection arguments' String array.
-                selection = ItemEntry._ID + "=?";
+                selection = ItemContract.ItemEntry._ID + "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
 
                 // This will perform a query on the items table where the _id equals 3 to return a
                 // Cursor containing that row of the table.
-                cursor = database.query(ItemEntry.TABLE_NAME, projection, selection, selectionArgs,
+                cursor = database.query(ItemContract.ItemEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
             default:
@@ -143,26 +141,26 @@ public class ItemProvider extends ContentProvider {
      */
     private Uri insertItem(Uri uri, ContentValues values) {
         // Check that the name is not null
-        String name = values.getAsString(ItemEntry.COLUMN_ITEM_NAME);
+        String name = values.getAsString(ItemContract.ItemEntry.COLUMN_ITEM_NAME);
         if (name == null || name.equals("")) {
             throw new IllegalArgumentException("Item requires a name");
         }
 
         // Check that the gender is valid
-        Integer owner = values.getAsInteger(ItemEntry.COLUMN_ITEM_OWNER);
-        if (owner == null || !ItemEntry.isValidOwner(owner)) {
+        Integer owner = values.getAsInteger(ItemContract.ItemEntry.COLUMN_ITEM_OWNER);
+        if (owner == null || !ItemContract.ItemEntry.isValidOwner(owner)) {
             throw new IllegalArgumentException("Item requires valid owner");
         }
 
         // If the weight is provided, check that it's greater than or equal to 0 kg
-        Float weight = values.getAsFloat(ItemEntry.COLUMN_ITEM_WEIGHT);
+        Float weight = values.getAsFloat(ItemContract.ItemEntry.COLUMN_ITEM_WEIGHT);
         if (weight != null && weight < 0) {
             throw new IllegalArgumentException("Item requires valid weight");
         }
 
         // Check that the price is valid
 
-        Float price = values.getAsFloat(ItemEntry.COLUMN_ITEM_PRICE);
+        Float price = values.getAsFloat(ItemContract.ItemEntry.COLUMN_ITEM_PRICE);
         if (price != null && price < 0) {
             throw new IllegalArgumentException("Item requires valid price");
         }
@@ -173,7 +171,7 @@ public class ItemProvider extends ContentProvider {
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Insert the new item with the given values
-        long id = database.insert(ItemEntry.TABLE_NAME, null, values);
+        long id = database.insert(ItemContract.ItemEntry.TABLE_NAME, null, values);
         // If the ID is -1, then the insertion failed. Log an error and return null.
         if (id == -1) {
             Log.e(LOG_TAG, "Failed to insert row for " + uri);
@@ -198,7 +196,7 @@ public class ItemProvider extends ContentProvider {
                 // For the ITEM_ID code, extract out the ID from the URI,
                 // so we know which row to update. Selection will be "_id=?" and selection
                 // arguments will be a String array containing the actual ID.
-                selection = ItemEntry._ID + "=?";
+                selection = ItemContract.ItemEntry._ID + "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
                 return updateItem(uri, contentValues, selection, selectionArgs);
             default:
@@ -214,8 +212,8 @@ public class ItemProvider extends ContentProvider {
     private int updateItem(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         // If the {@link ItemEntry#COLUMN_ITEM_NAME} key is present,
         // check that the name value is not null.
-        if (values.containsKey(ItemEntry.COLUMN_ITEM_NAME)) {
-            String name = values.getAsString(ItemEntry.COLUMN_ITEM_NAME);
+        if (values.containsKey(ItemContract.ItemEntry.COLUMN_ITEM_NAME)) {
+            String name = values.getAsString(ItemContract.ItemEntry.COLUMN_ITEM_NAME);
             if (name == null) {
                 throw new IllegalArgumentException("Item requires a name");
             }
@@ -223,27 +221,27 @@ public class ItemProvider extends ContentProvider {
 
         // If the {@link ItemEntry#COLUMN_ITEM_OWNER} key is present,
         // check that the gender value is valid.
-        if (values.containsKey(ItemEntry.COLUMN_ITEM_OWNER)) {
-            Integer owner = values.getAsInteger(ItemEntry.COLUMN_ITEM_OWNER);
-            if (owner == null || !ItemEntry.isValidOwner(owner)) {
+        if (values.containsKey(ItemContract.ItemEntry.COLUMN_ITEM_OWNER)) {
+            Integer owner = values.getAsInteger(ItemContract.ItemEntry.COLUMN_ITEM_OWNER);
+            if (owner == null || !ItemContract.ItemEntry.isValidOwner(owner)) {
                 throw new IllegalArgumentException("Item requires valid owner");
             }
         }
 
         // If the {@link ItemEntry#COLUMN_ITEM_WEIGHT} key is present,
         // check that the weight value is valid.
-        if (values.containsKey(ItemEntry.COLUMN_ITEM_WEIGHT)) {
+        if (values.containsKey(ItemContract.ItemEntry.COLUMN_ITEM_WEIGHT)) {
             // Check that the weight is greater than or equal to 0 kg
-            Float weight = values.getAsFloat(ItemEntry.COLUMN_ITEM_WEIGHT);
+            Float weight = values.getAsFloat(ItemContract.ItemEntry.COLUMN_ITEM_WEIGHT);
             if (weight != null && weight < 0) {
                 throw new IllegalArgumentException("Item requires valid weight");
             }
         }
         // If the {@link ItemEntry#COLUMN_ITEM_PRICE} key is present,
         // check that the price value is valid.
-        if (values.containsKey(ItemEntry.COLUMN_ITEM_PRICE)) {
+        if (values.containsKey(ItemContract.ItemEntry.COLUMN_ITEM_PRICE)) {
             // Check that the price is greater than or equal to 0 EUR
-            Float price = values.getAsFloat(ItemEntry.COLUMN_ITEM_PRICE);
+            Float price = values.getAsFloat(ItemContract.ItemEntry.COLUMN_ITEM_PRICE);
             if (price != null && price < 0) {
                 throw new IllegalArgumentException("Item requires valid price");
             }
@@ -260,7 +258,7 @@ public class ItemProvider extends ContentProvider {
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Perform the update on the database and get the number of rows affected
-        int rowsUpdated = database.update(ItemEntry.TABLE_NAME, values, selection, selectionArgs);
+        int rowsUpdated = database.update(ItemContract.ItemEntry.TABLE_NAME, values, selection, selectionArgs);
 
         // If 1 or more rows were updated, then notify all listeners that the data at the
         // given URI has changed
@@ -284,13 +282,13 @@ public class ItemProvider extends ContentProvider {
         switch (match) {
             case ITEMS:
                 // Delete all rows that match the selection and selection args
-                rowsDeleted = database.delete(ItemEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = database.delete(ItemContract.ItemEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             case ITEM_ID:
                 // Delete a single row given by the ID in the URI
-                selection = ItemEntry._ID + "=?";
+                selection = ItemContract.ItemEntry._ID + "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
-                rowsDeleted = database.delete(ItemEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = database.delete(ItemContract.ItemEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
                 throw new IllegalArgumentException("Deletion is not supported for " + uri);
@@ -311,9 +309,9 @@ public class ItemProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case ITEMS:
-                return ItemEntry.CONTENT_LIST_TYPE;
+                return ItemContract.ItemEntry.CONTENT_LIST_TYPE;
             case ITEM_ID:
-                return ItemEntry.CONTENT_ITEM_TYPE;
+                return ItemContract.ItemEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new IllegalStateException("Unknown URI " + uri + " with match " + match);
         }

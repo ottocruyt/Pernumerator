@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.pets.data;
+package be.android.pernumerator.data;
 
 import android.net.Uri;
 import android.content.ContentResolver;
@@ -34,7 +34,7 @@ public final class ItemContract {
      * content authority is the package name for the app, which is guaranteed to be unique on the
      * device.
      */
-    public static final String CONTENT_AUTHORITY = "com.example.android.pets";
+    public static final String CONTENT_AUTHORITY = "be.android.pernumerator";
 
     /**
      * Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
@@ -44,8 +44,8 @@ public final class ItemContract {
 
     /**
      * Possible path (appended to base content URI for possible URI's)
-     * For instance, content://com.example.android.pets/pets/ is a valid path for
-     * looking at pet data. content://com.example.android.pets/staff/ will fail,
+     * For instance, content://be.android.android.pernumerator/pernumerator/ is a valid path for
+     * looking at item data. content://be.android.android.pernumerator/staff/ will fail,
      * as the ContentProvider hasn't been given any information on what to do with "staff".
      */
     public static final String PATH_ITEMS = "items";
@@ -71,7 +71,7 @@ public final class ItemContract {
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_ITEMS;
 
-        /** Name of database table for pets */
+        /** Name of database table for be.android.pernumerator */
         public final static String TABLE_NAME = "items";
 
         /**

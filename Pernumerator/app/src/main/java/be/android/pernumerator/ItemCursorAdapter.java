@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.pets;
+package be.android.pernumerator;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -24,7 +24,7 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
-import com.example.android.pets.data.ItemContract.ItemEntry;
+import be.android.pernumerator.data.ItemContract;
 
 /**
  * {@link ItemCursorAdapter} is an adapter for a list or grid view
@@ -75,8 +75,8 @@ public class ItemCursorAdapter extends CursorAdapter {
         TextView summaryTextView = (TextView) view.findViewById(R.id.summary);
 
         // Find the columns of item attributes that we're interested in
-        int nameColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);
-        int typeColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_TYPE);
+        int nameColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_NAME);
+        int typeColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_TYPE);
 
         // Read the item attributes from the Cursor for the current item
         String itemName = cursor.getString(nameColumnIndex);
@@ -88,7 +88,7 @@ public class ItemCursorAdapter extends CursorAdapter {
             itemType = context.getString(R.string.unknown_type);
         }
 
-        // Update the TextViews with the attributes for the current pet
+        // Update the TextViews with the attributes for the current item
         nameTextView.setText(itemName);
         summaryTextView.setText(itemType);
     }
