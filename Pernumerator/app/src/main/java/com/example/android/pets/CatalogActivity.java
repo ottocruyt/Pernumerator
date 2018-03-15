@@ -39,7 +39,7 @@ import com.example.android.pets.data.ItemContract.ItemEntry;
 //TODO add type spinner with possibility of adding a new one
 //TODO add barcode field
 //TODO add dimension field
-//TODO change view in catalog activity
+//TODO change view in catalog activity to show everything sorted by type
 
 /**
  * Displays list of items that were entered and stored in the app.
@@ -165,6 +165,9 @@ public class CatalogActivity extends AppCompatActivity implements
                 ItemEntry._ID,
                 ItemEntry.COLUMN_ITEM_NAME,
                 ItemEntry.COLUMN_ITEM_TYPE };
+        // Define the sort method of the query
+
+        String sortOrder = ItemEntry.COLUMN_ITEM_TYPE;
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
@@ -172,7 +175,7 @@ public class CatalogActivity extends AppCompatActivity implements
                 projection,             // Columns to include in the resulting Cursor
                 null,                   // No selection clause
                 null,                   // No selection arguments
-                null);                  // Default sort order
+                sortOrder);                  // Default sort order
     }
 
     @Override
