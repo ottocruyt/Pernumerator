@@ -40,7 +40,6 @@ import com.example.android.pets.data.ItemContract.ItemEntry;
 //TODO add barcode field
 //TODO add dimension field
 //TODO change view in catalog activity
-//TODO make price and weight always have 2 and 3 trailing zeroes
 
 /**
  * Displays list of items that were entered and stored in the app.

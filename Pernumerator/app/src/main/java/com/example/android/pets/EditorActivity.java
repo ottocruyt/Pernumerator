@@ -51,10 +51,7 @@ public class EditorActivity extends AppCompatActivity implements
     /** Identifier for the pet data loader */
     private static final int EXISTING_ITEM_LOADER = 0;
 
-    /** DecimalFormat used for price */
-    private static final String decimalFormatStr = "###0.00";
-
-    /** Content URI for the existing pet (null if it's a new pet) */
+    /** Content URI for the existing item (null if it's a new item) */
     private Uri mCurrentItemUri;
 
     /** EditText field to enter the item's name */
@@ -234,13 +231,9 @@ public class EditorActivity extends AppCompatActivity implements
         if (!TextUtils.isEmpty(priceString)) {
             price = Float.parseFloat(priceString);
         }
-        // make the price a 0.00 format
-
-        DecimalFormat decimalFormat = new DecimalFormat(decimalFormatStr);
-        float twoDigPrice = Float.valueOf(decimalFormat.format(price));
 
         // put it in the values
-        values.put(ItemEntry.COLUMN_ITEM_PRICE, twoDigPrice);
+        values.put(ItemEntry.COLUMN_ITEM_PRICE, price);
 
         // Determine if this is a new or existing item by checking if mCurrentItemUri is null or not
         if (mCurrentItemUri == null) {
@@ -420,10 +413,16 @@ public class EditorActivity extends AppCompatActivity implements
             float price = cursor.getFloat(priceColumnIndex);
 
             // Update the views on the screen with the values from the database
+            // first format the numbers
+            DecimalFormat weightFormat = new DecimalFormat("###0.000");
+            DecimalFormat priceFormat = new DecimalFormat("###0.00");
+            String formattedWeight = weightFormat.format(weight);
+            String formattedPrice = priceFormat.format(price);
+
             mNameEditText.setText(name);
             mTypeEditText.setText(type);
-            mWeightEditText.setText(Float.toString(weight));
-            mPriceEditText.setText(Float.toString(price));
+            mWeightEditText.setText(formattedWeight);
+            mPriceEditText.setText(formattedPrice);
 
             // Owner is a dropdown spinner, so map the constant value from the database
             // into one of the dropdown options (0 is BOTH, 1 is OTTO, 2 is LINDE, 3 is OTHER).
