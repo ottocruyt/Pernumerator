@@ -160,9 +160,16 @@ public class ItemProvider extends ContentProvider {
             throw new IllegalArgumentException("Item requires valid weight");
         }
 
+        // Check that the price is valid
+
+        Float price = values.getAsFloat(ItemEntry.COLUMN_ITEM_PRICE);
+        if (price != null && price < 0) {
+            throw new IllegalArgumentException("Item requires valid price");
+        }
+
         // No need to check the type, any value is valid (including null).
 
-        // Get writeable database
+        // Get writable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Insert the new item with the given values
@@ -232,6 +239,15 @@ public class ItemProvider extends ContentProvider {
                 throw new IllegalArgumentException("Item requires valid weight");
             }
         }
+        // If the {@link ItemEntry#COLUMN_ITEM_PRICE} key is present,
+        // check that the price value is valid.
+        if (values.containsKey(ItemEntry.COLUMN_ITEM_PRICE)) {
+            // Check that the price is greater than or equal to 0 EUR
+            Float price = values.getAsFloat(ItemEntry.COLUMN_ITEM_PRICE);
+            if (price != null && price < 0) {
+                throw new IllegalArgumentException("Item requires valid price");
+            }
+        }
 
         // No need to check the Type, any value is valid (including null).
 
@@ -240,7 +256,7 @@ public class ItemProvider extends ContentProvider {
             return 0;
         }
 
-        // Otherwise, get writeable database to update the data
+        // Otherwise, get writable database to update the data
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Perform the update on the database and get the number of rows affected
@@ -258,7 +274,7 @@ public class ItemProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        // Get writeable database
+        // Get writable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Track the number of rows that were deleted

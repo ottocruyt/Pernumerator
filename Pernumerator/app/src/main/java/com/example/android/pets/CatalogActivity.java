@@ -120,6 +120,7 @@ public class CatalogActivity extends AppCompatActivity implements
         values.put(ItemEntry.COLUMN_ITEM_TYPE, "Electronics");
         values.put(ItemEntry.COLUMN_ITEM_OWNER, ItemEntry.OWNER_OTTO);
         values.put(ItemEntry.COLUMN_ITEM_WEIGHT, 0.162);
+        values.put(ItemEntry.COLUMN_ITEM_PRICE, 10);
 
         // Insert a new row for Oneplus into the provider using the ContentResolver.
         // Use the {@link ItemEntry#CONTENT_URI} to indicate that we want to insert

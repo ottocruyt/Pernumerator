@@ -95,6 +95,13 @@
     <!-- Units for weight of the item (kilograms) [CHAR LIMIT=5] -->
     <string name="unit_item_weight">kg</string>
 
+    <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
+    <string name="hint_item_price">Price</string>
+
+    <!-- Units for weight of the item (kilograms) [CHAR LIMIT=5] -->
+    <string name="unit_item_price">EUR</string>
+
+
     <!-- Label for dropdown menu option if the Item's owner is Other [CHAR LIMIT=20] -->
     <string name="owner_other">Other</string>
 

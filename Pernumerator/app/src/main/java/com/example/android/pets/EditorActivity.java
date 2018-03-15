@@ -52,16 +52,19 @@ public class EditorActivity extends AppCompatActivity implements
     /** Content URI for the existing pet (null if it's a new pet) */
     private Uri mCurrentItemUri;
 
-    /** EditText field to enter the pet's name */
+    /** EditText field to enter the item's name */
     private EditText mNameEditText;
 
-    /** EditText field to enter the pet's breed */
+    /** EditText field to enter the item's type */
     private EditText mTypeEditText;
 
-    /** EditText field to enter the pet's weight */
+    /** EditText field to enter the item's weight */
     private EditText mWeightEditText;
 
-    /** EditText field to enter the pet's gender */
+    /** EditText field to enter the item's price */
+    private EditText mPriceEditText;
+
+    /** EditText field to enter the item's owner */
     private Spinner mOwnerSpinner;
 
     /**
@@ -119,6 +122,7 @@ public class EditorActivity extends AppCompatActivity implements
         mTypeEditText = (EditText) findViewById(R.id.edit_item_type);
         mWeightEditText = (EditText) findViewById(R.id.edit_item_weight);
         mOwnerSpinner = (Spinner) findViewById(R.id.spinner_owner);
+        mPriceEditText = (EditText) findViewById(R.id.edit_item_price);
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
@@ -126,6 +130,7 @@ public class EditorActivity extends AppCompatActivity implements
         mNameEditText.setOnTouchListener(mTouchListener);
         mTypeEditText.setOnTouchListener(mTouchListener);
         mWeightEditText.setOnTouchListener(mTouchListener);
+        mPriceEditText.setOnTouchListener(mTouchListener);
         mOwnerSpinner.setOnTouchListener(mTouchListener);
 
         setupSpinner();
@@ -149,7 +154,6 @@ public class EditorActivity extends AppCompatActivity implements
         // Set the integer mSelected to the constant values
         mOwnerSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            //TODO add option both
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selection = (String) parent.getItemAtPosition(position);
                 if (!TextUtils.isEmpty(selection)) {
@@ -182,6 +186,7 @@ public class EditorActivity extends AppCompatActivity implements
         String nameString = mNameEditText.getText().toString().trim();
         String typeString = mTypeEditText.getText().toString().trim();
         String weightString = mWeightEditText.getText().toString().trim();
+        String priceString = mPriceEditText.getText().toString().trim();
 
         // Check if this is supposed to be a new item
         // and check if all the fields in the editor are blank
@@ -206,6 +211,13 @@ public class EditorActivity extends AppCompatActivity implements
             weight = Integer.parseInt(weightString);
         }
         values.put(ItemEntry.COLUMN_ITEM_WEIGHT, weight);
+        // If the price is not provided by the user, don't try to parse the string into an
+        // integer value. Use 0 by default.
+        float price = 0;
+        if (!TextUtils.isEmpty(priceString)) {
+            price = Float.parseFloat(priceString);
+        }
+        values.put(ItemEntry.COLUMN_ITEM_PRICE, price);
 
         // Determine if this is a new or existing item by checking if mCurrentItemUri is null or not
         if (mCurrentItemUri == null) {
@@ -345,7 +357,8 @@ public class EditorActivity extends AppCompatActivity implements
                 ItemEntry.COLUMN_ITEM_NAME,
                 ItemEntry.COLUMN_ITEM_TYPE,
                 ItemEntry.COLUMN_ITEM_OWNER,
-                ItemEntry.COLUMN_ITEM_WEIGHT };
+                ItemEntry.COLUMN_ITEM_WEIGHT,
+                ItemEntry.COLUMN_ITEM_PRICE};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
@@ -371,19 +384,22 @@ public class EditorActivity extends AppCompatActivity implements
             int typeColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_TYPE);
             int ownerColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_OWNER);
             int weightColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_WEIGHT);
+            int priceColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE);
 
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
             String type = cursor.getString(typeColumnIndex);
             int owner = cursor.getInt(ownerColumnIndex);
             int weight = cursor.getInt(weightColumnIndex);
+            float price = cursor.getFloat(priceColumnIndex);
 
             // Update the views on the screen with the values from the database
             mNameEditText.setText(name);
             mTypeEditText.setText(type);
             mWeightEditText.setText(Integer.toString(weight));
+            mPriceEditText.setText(Float.toString(price));
 
-            // OWner is a dropdown spinner, so map the constant value from the database
+            // Owner is a dropdown spinner, so map the constant value from the database
             // into one of the dropdown options (0 is BOTH, 1 is OTTO, 2 is LINDE, 3 is OTHER).
             // Then call setSelection() so that option is displayed on screen as the current selection.
             switch (owner) {
@@ -408,6 +424,7 @@ public class EditorActivity extends AppCompatActivity implements
         mNameEditText.setText("");
         mTypeEditText.setText("");
         mWeightEditText.setText("");
+        mPriceEditText.setText("");
         mOwnerSpinner.setSelection(0); // Select "Unknown" gender
     }
 

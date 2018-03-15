@@ -111,6 +111,12 @@ public final class ItemContract {
          * Type: INTEGER
          */
         public final static String COLUMN_ITEM_WEIGHT = "weight";
+        /**
+         * Price of the item
+         * Type: FLOAT
+         *
+         */
+        public final static String COLUMN_ITEM_PRICE = "price";
 
         /**
          * Possible values for the gender of the pet.
@@ -126,10 +132,7 @@ public final class ItemContract {
          * {@link #OWNER_LINDE} or {@link #OWNER_OTHER}.
          */
         public static boolean isValidOwner(int owner) {
-            if (owner == OWNER_BOTH || owner == OWNER_OTTO || owner == OWNER_LINDE || owner == OWNER_OTHER ) {
-                return true;
-            }
-            return false;
+            return owner == OWNER_BOTH || owner == OWNER_OTTO || owner == OWNER_LINDE || owner == OWNER_OTHER;
         }
     }
 
