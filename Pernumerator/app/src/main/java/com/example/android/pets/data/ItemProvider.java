@@ -144,7 +144,7 @@ public class ItemProvider extends ContentProvider {
     private Uri insertItem(Uri uri, ContentValues values) {
         // Check that the name is not null
         String name = values.getAsString(ItemEntry.COLUMN_ITEM_NAME);
-        if (name == null) {
+        if (name == null || name.equals("")) {
             throw new IllegalArgumentException("Item requires a name");
         }
 
@@ -155,7 +155,7 @@ public class ItemProvider extends ContentProvider {
         }
 
         // If the weight is provided, check that it's greater than or equal to 0 kg
-        Integer weight = values.getAsInteger(ItemEntry.COLUMN_ITEM_WEIGHT);
+        Float weight = values.getAsFloat(ItemEntry.COLUMN_ITEM_WEIGHT);
         if (weight != null && weight < 0) {
             throw new IllegalArgumentException("Item requires valid weight");
         }
@@ -234,7 +234,7 @@ public class ItemProvider extends ContentProvider {
         // check that the weight value is valid.
         if (values.containsKey(ItemEntry.COLUMN_ITEM_WEIGHT)) {
             // Check that the weight is greater than or equal to 0 kg
-            Integer weight = values.getAsInteger(ItemEntry.COLUMN_ITEM_WEIGHT);
+            Float weight = values.getAsFloat(ItemEntry.COLUMN_ITEM_WEIGHT);
             if (weight != null && weight < 0) {
                 throw new IllegalArgumentException("Item requires valid weight");
             }

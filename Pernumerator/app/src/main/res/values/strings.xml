@@ -44,6 +44,9 @@
     <!-- Toast message in editor when new item has failed to be inserted [CHAR LIMIT=NONE] -->
     <string name="editor_insert_item_failed">Error with saving Item</string>
 
+    <!-- Toast message in editor when new item has no name to be inserted [CHAR LIMIT=NONE] -->
+    <string name="editor_insert_item_noname">Please enter an Item name before saving</string>
+
     <!-- Toast message in editor when current item was successfully updated [CHAR LIMIT=NONE] -->
     <string name="editor_update_item_successful">Item updated</string>
 

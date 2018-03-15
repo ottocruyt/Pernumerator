@@ -56,7 +56,7 @@ public class ItemDbHelper extends SQLiteOpenHelper {
                 + ItemEntry.COLUMN_ITEM_NAME + " TEXT NOT NULL, "
                 + ItemEntry.COLUMN_ITEM_TYPE + " TEXT, "
                 + ItemEntry.COLUMN_ITEM_OWNER + " INTEGER NOT NULL, "
-                + ItemEntry.COLUMN_ITEM_WEIGHT + " INTEGER NOT NULL DEFAULT 0, "
+                + ItemEntry.COLUMN_ITEM_WEIGHT + " FLOAT NOT NULL DEFAULT 0, "
                 + ItemEntry.COLUMN_ITEM_PRICE + " FLOAT NOT NULL DEFAULT 0);";
 
         // Execute the SQL statement

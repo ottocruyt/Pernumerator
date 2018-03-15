@@ -113,7 +113,7 @@
                     android:id="@+id/edit_item_weight"
                     style="@style/EditorFieldStyle"
                     android:hint="@string/hint_item_weight"
-                    android:inputType="number" />
+                    android:inputType="numberDecimal" />
 
                 <!-- Units for weight (kg) -->
                 <TextView

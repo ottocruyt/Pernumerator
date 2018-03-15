@@ -108,7 +108,7 @@ public final class ItemContract {
         /**
          * Weight of the item.
          *
-         * Type: INTEGER
+         * Type: FLOAT
          */
         public final static String COLUMN_ITEM_WEIGHT = "weight";
         /**
@@ -119,7 +119,7 @@ public final class ItemContract {
         public final static String COLUMN_ITEM_PRICE = "price";
 
         /**
-         * Possible values for the gender of the pet.
+         * Possible values for the owner of the item.
          */
         public static final int OWNER_BOTH = 0;
         public static final int OWNER_OTTO = 1;

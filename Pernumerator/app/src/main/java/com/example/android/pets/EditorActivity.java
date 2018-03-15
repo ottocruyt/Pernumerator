@@ -40,6 +40,8 @@ import android.widget.Toast;
 
 import com.example.android.pets.data.ItemContract.ItemEntry;
 
+import java.text.DecimalFormat;
+
 /**
  * Allows user to create a new item or edit an existing one.
  */
@@ -48,6 +50,9 @@ public class EditorActivity extends AppCompatActivity implements
 
     /** Identifier for the pet data loader */
     private static final int EXISTING_ITEM_LOADER = 0;
+
+    /** DecimalFormat used for price */
+    private static final String decimalFormatStr = "###0.00";
 
     /** Content URI for the existing pet (null if it's a new pet) */
     private Uri mCurrentItemUri;
@@ -180,7 +185,10 @@ public class EditorActivity extends AppCompatActivity implements
     /**
      * Get user input from editor and save item into database.
      */
-    private void saveItem() {
+    private boolean saveItem() {
+
+        // return value determines if after saving, the EditorActivity should be closed or not (true = close, false = stay open)
+        boolean exitEditorAfterReturn = true;
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
@@ -192,32 +200,47 @@ public class EditorActivity extends AppCompatActivity implements
         // and check if all the fields in the editor are blank
         if (mCurrentItemUri == null &&
                 TextUtils.isEmpty(nameString) && TextUtils.isEmpty(typeString) &&
-                TextUtils.isEmpty(weightString) && mOwner == ItemEntry.OWNER_BOTH) {
+                TextUtils.isEmpty(weightString) && mOwner == ItemEntry.OWNER_BOTH && TextUtils.isEmpty(priceString)) {
             // Since no fields were modified, we can return early without creating a new item.
             // No need to create ContentValues and no need to do any ContentProvider operations.
-            return;
+            // -> even if you press V, if nothing is changed it will just not save it and go to main
+            return exitEditorAfterReturn;
         }
 
         // Create a ContentValues object where column names are the keys,
         // and item attributes from the editor are the values.
+        // First check for name (otherwise don't start):
+
+        if (nameString == null || nameString.equals("")) {
+            exitEditorAfterReturn = false;
+            Toast.makeText(this, getString(R.string.editor_insert_item_noname), Toast.LENGTH_SHORT).show();
+            return exitEditorAfterReturn;
+        }
+
         ContentValues values = new ContentValues();
         values.put(ItemEntry.COLUMN_ITEM_NAME, nameString);
         values.put(ItemEntry.COLUMN_ITEM_TYPE, typeString);
         values.put(ItemEntry.COLUMN_ITEM_OWNER, mOwner);
         // If the weight is not provided by the user, don't try to parse the string into an
-        // integer value. Use 0 by default.
-        int weight = 0;
+        // float value. Use 0 by default.
+        float weight = 0;
         if (!TextUtils.isEmpty(weightString)) {
-            weight = Integer.parseInt(weightString);
+            weight = Float.parseFloat(weightString);
         }
         values.put(ItemEntry.COLUMN_ITEM_WEIGHT, weight);
         // If the price is not provided by the user, don't try to parse the string into an
-        // integer value. Use 0 by default.
+        // float value. Use 0 by default.
         float price = 0;
         if (!TextUtils.isEmpty(priceString)) {
             price = Float.parseFloat(priceString);
         }
-        values.put(ItemEntry.COLUMN_ITEM_PRICE, price);
+        // make the price a 0.00 format
+
+        DecimalFormat decimalFormat = new DecimalFormat(decimalFormatStr);
+        float twoDigPrice = Float.valueOf(decimalFormat.format(price));
+
+        // put it in the values
+        values.put(ItemEntry.COLUMN_ITEM_PRICE, twoDigPrice);
 
         // Determine if this is a new or existing item by checking if mCurrentItemUri is null or not
         if (mCurrentItemUri == null) {
@@ -238,7 +261,7 @@ public class EditorActivity extends AppCompatActivity implements
         } else {
             // Otherwise this is an EXISTING item, so update the item with content URI: mCurrentItemUri
             // and pass in the new ContentValues. Pass in null for the selection and selection args
-            // because mCurrentPetUri will already identify the correct row in the database that
+            // because mCurrentItemUri will already identify the correct row in the database that
             // we want to modify.
             int rowsAffected = getContentResolver().update(mCurrentItemUri, values, null, null);
 
@@ -253,6 +276,7 @@ public class EditorActivity extends AppCompatActivity implements
                         Toast.LENGTH_SHORT).show();
             }
         }
+        return exitEditorAfterReturn;
     }
 
     @Override
@@ -285,9 +309,11 @@ public class EditorActivity extends AppCompatActivity implements
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 // Save item to database
-                saveItem();
+                boolean exitToCatalog = saveItem();
                 // Exit activity
-                finish();
+                if (exitToCatalog) {
+                    finish();
+                }
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
@@ -390,13 +416,13 @@ public class EditorActivity extends AppCompatActivity implements
             String name = cursor.getString(nameColumnIndex);
             String type = cursor.getString(typeColumnIndex);
             int owner = cursor.getInt(ownerColumnIndex);
-            int weight = cursor.getInt(weightColumnIndex);
+            float weight = cursor.getFloat(weightColumnIndex);
             float price = cursor.getFloat(priceColumnIndex);
 
             // Update the views on the screen with the values from the database
             mNameEditText.setText(name);
             mTypeEditText.setText(type);
-            mWeightEditText.setText(Integer.toString(weight));
+            mWeightEditText.setText(Float.toString(weight));
             mPriceEditText.setText(Float.toString(price));
 
             // Owner is a dropdown spinner, so map the constant value from the database
