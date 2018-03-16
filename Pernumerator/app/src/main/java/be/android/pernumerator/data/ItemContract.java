@@ -106,11 +106,20 @@ public final class ItemContract {
         public final static String COLUMN_ITEM_OWNER = "owner";
 
         /**
+         * Possible values for the owner of the item.
+         */
+        public static final int OWNER_BOTH = 0;
+        public static final int OWNER_OTTO = 1;
+        public static final int OWNER_LINDE = 2;
+        public static final int OWNER_OTHER = 3;
+
+        /**
          * Weight of the item.
          *
          * Type: FLOAT
          */
         public final static String COLUMN_ITEM_WEIGHT = "weight";
+
         /**
          * Price of the item
          * Type: FLOAT
@@ -119,12 +128,20 @@ public final class ItemContract {
         public final static String COLUMN_ITEM_PRICE = "price";
 
         /**
-         * Possible values for the owner of the item.
+         * Dimensions of the item
+         * L:
+         * W:
+         * H:
+         * Type: FLOAT
+         *
          */
-        public static final int OWNER_BOTH = 0;
-        public static final int OWNER_OTTO = 1;
-        public static final int OWNER_LINDE = 2;
-        public static final int OWNER_OTHER = 3;
+
+        public final static String COLUMN_ITEM_DIM_L = "length";
+        public final static String COLUMN_ITEM_DIM_W = "width";
+        public final static String COLUMN_ITEM_DIM_H = "height";
+
+
+
 
 
         /**

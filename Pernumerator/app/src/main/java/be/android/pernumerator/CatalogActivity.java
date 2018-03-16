@@ -37,9 +37,9 @@ import be.android.pernumerator.data.ItemContract;
 
 //TODO add type spinner with possibility of adding a new one
 //TODO add barcode field
-//TODO add dimension field
 //TODO editor not enable for viewing
 //TODO add image support
+//TODO databse update handler
 
 /**
  * Displays list of items that were entered and stored in the app.
@@ -118,6 +118,9 @@ public class CatalogActivity extends AppCompatActivity implements
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_OWNER, ItemContract.ItemEntry.OWNER_OTTO);
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_WEIGHT, 0.162);
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_PRICE, 10);
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_DIM_L, 0.15);
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_DIM_W, 0.10);
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_DIM_H, 0.002);
 
         // Insert a new row for Oneplus into the provider using the ContentResolver.
         // Use the {@link ItemEntry#CONTENT_URI} to indicate that we want to insert

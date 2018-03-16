@@ -165,6 +165,25 @@ public class ItemProvider extends ContentProvider {
             throw new IllegalArgumentException("Item requires valid price");
         }
 
+        // Check that the dimensions are valid
+
+        Float length = values.getAsFloat(ItemContract.ItemEntry.COLUMN_ITEM_DIM_H);
+        if (length != null && length < 0) {
+            throw new IllegalArgumentException("Item requires valid height");
+        }
+
+        Float width = values.getAsFloat(ItemContract.ItemEntry.COLUMN_ITEM_DIM_W);
+        if (width != null && width < 0) {
+            throw new IllegalArgumentException("Item requires valid width");
+        }
+
+        Float height = values.getAsFloat(ItemContract.ItemEntry.COLUMN_ITEM_DIM_H);
+        if (height != null && height < 0) {
+            throw new IllegalArgumentException("Item requires valid height");
+        }
+
+
+
         // No need to check the type, any value is valid (including null).
 
         // Get writable database
@@ -244,6 +263,34 @@ public class ItemProvider extends ContentProvider {
             Float price = values.getAsFloat(ItemContract.ItemEntry.COLUMN_ITEM_PRICE);
             if (price != null && price < 0) {
                 throw new IllegalArgumentException("Item requires valid price");
+            }
+        }
+
+        // If the {@link ItemEntry#COLUMN_ITEM_DIM_L} key is present,
+        // check that the length value is valid.
+        if (values.containsKey(ItemContract.ItemEntry.COLUMN_ITEM_DIM_L)) {
+            // Check that the length is greater than or equal to 0 m
+            Float length = values.getAsFloat(ItemContract.ItemEntry.COLUMN_ITEM_DIM_L);
+            if (length != null && length < 0) {
+                throw new IllegalArgumentException("Item requires valid length");
+            }
+        }
+        // If the {@link ItemEntry#COLUMN_ITEM_DIM_W} key is present,
+        // check that the width value is valid.
+        if (values.containsKey(ItemContract.ItemEntry.COLUMN_ITEM_DIM_W)) {
+            // Check that the width is greater than or equal to 0 m
+            Float width = values.getAsFloat(ItemContract.ItemEntry.COLUMN_ITEM_DIM_W);
+            if (width != null && width < 0) {
+                throw new IllegalArgumentException("Item requires valid width");
+            }
+        }
+        // If the {@link ItemEntry#COLUMN_ITEM_DIM_H} key is present,
+        // check that the height value is valid.
+        if (values.containsKey(ItemContract.ItemEntry.COLUMN_ITEM_DIM_H)) {
+            // Check that the height is greater than or equal to 0 EUR
+            Float height = values.getAsFloat(ItemContract.ItemEntry.COLUMN_ITEM_DIM_H);
+            if (height != null && height < 0) {
+                throw new IllegalArgumentException("Item requires valid height");
             }
         }
 

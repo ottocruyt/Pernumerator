@@ -66,6 +66,13 @@ public class EditorActivity extends AppCompatActivity implements
     /** EditText field to enter the item's price */
     private EditText mPriceEditText;
 
+    /** EditText field to enter the item's length */
+    private EditText mLengthEditText;
+    /** EditText field to enter the item's width */
+    private EditText mWidthEditText;
+    /** EditText field to enter the item's height */
+    private EditText mHeightEditText;
+
     /** EditText field to enter the item's owner */
     private Spinner mOwnerSpinner;
 
@@ -125,6 +132,9 @@ public class EditorActivity extends AppCompatActivity implements
         mWeightEditText = (EditText) findViewById(R.id.edit_item_weight);
         mOwnerSpinner = (Spinner) findViewById(R.id.spinner_owner);
         mPriceEditText = (EditText) findViewById(R.id.edit_item_price);
+        mLengthEditText = (EditText) findViewById(R.id.edit_item_length);
+        mWidthEditText = (EditText) findViewById(R.id.edit_item_width);
+        mHeightEditText = (EditText) findViewById(R.id.edit_item_height);
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
@@ -133,6 +143,9 @@ public class EditorActivity extends AppCompatActivity implements
         mTypeEditText.setOnTouchListener(mTouchListener);
         mWeightEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
+        mLengthEditText.setOnTouchListener(mTouchListener);
+        mWidthEditText.setOnTouchListener(mTouchListener);
+        mHeightEditText.setOnTouchListener(mTouchListener);
         mOwnerSpinner.setOnTouchListener(mTouchListener);
 
         setupSpinner();
@@ -192,12 +205,18 @@ public class EditorActivity extends AppCompatActivity implements
         String typeString = mTypeEditText.getText().toString().trim();
         String weightString = mWeightEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
+        String lengthString = mLengthEditText.getText().toString().trim();
+        String widthString = mWidthEditText.getText().toString().trim();
+        String heightString = mHeightEditText.getText().toString().trim();
+
 
         // Check if this is supposed to be a new item
         // and check if all the fields in the editor are blank
         if (mCurrentItemUri == null &&
                 TextUtils.isEmpty(nameString) && TextUtils.isEmpty(typeString) &&
-                TextUtils.isEmpty(weightString) && mOwner == ItemContract.ItemEntry.OWNER_BOTH && TextUtils.isEmpty(priceString)) {
+                TextUtils.isEmpty(weightString) && mOwner == ItemContract.ItemEntry.OWNER_BOTH &&
+                TextUtils.isEmpty(priceString) && TextUtils.isEmpty(lengthString) &&
+                TextUtils.isEmpty(widthString) && TextUtils.isEmpty(heightString)) {
             // Since no fields were modified, we can return early without creating a new item.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             // -> even if you press V, if nothing is changed it will just not save it and go to main
@@ -231,9 +250,35 @@ public class EditorActivity extends AppCompatActivity implements
         if (!TextUtils.isEmpty(priceString)) {
             price = Float.parseFloat(priceString);
         }
-
         // put it in the values
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_PRICE, price);
+
+        // If the length is not provided by the user, don't try to parse the string into an
+        // float value. Use 0 by default.
+        float length = 0;
+        if (!TextUtils.isEmpty(lengthString)) {
+            length = Float.parseFloat(lengthString);
+        }
+        // put it in the values
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_DIM_L, length);
+
+        // If the width is not provided by the user, don't try to parse the string into an
+        // float value. Use 0 by default.
+        float width = 0;
+        if (!TextUtils.isEmpty(widthString)) {
+            width = Float.parseFloat(widthString);
+        }
+        // put it in the values
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_DIM_W, width);
+
+        // If the height is not provided by the user, don't try to parse the string into an
+        // float value. Use 0 by default.
+        float height = 0;
+        if (!TextUtils.isEmpty(heightString)) {
+            height = Float.parseFloat(heightString);
+        }
+        // put it in the values
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_DIM_H, height);
 
         // Determine if this is a new or existing item by checking if mCurrentItemUri is null or not
         if (mCurrentItemUri == null) {
@@ -377,7 +422,10 @@ public class EditorActivity extends AppCompatActivity implements
                 ItemContract.ItemEntry.COLUMN_ITEM_TYPE,
                 ItemContract.ItemEntry.COLUMN_ITEM_OWNER,
                 ItemContract.ItemEntry.COLUMN_ITEM_WEIGHT,
-                ItemContract.ItemEntry.COLUMN_ITEM_PRICE};
+                ItemContract.ItemEntry.COLUMN_ITEM_PRICE,
+                ItemContract.ItemEntry.COLUMN_ITEM_DIM_L,
+                ItemContract.ItemEntry.COLUMN_ITEM_DIM_W,
+                ItemContract.ItemEntry.COLUMN_ITEM_DIM_H};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
@@ -404,6 +452,9 @@ public class EditorActivity extends AppCompatActivity implements
             int ownerColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_OWNER);
             int weightColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_WEIGHT);
             int priceColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_PRICE);
+            int lengthColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_DIM_L);
+            int widthColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_DIM_W);
+            int heightColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_DIM_H);
 
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
@@ -411,19 +462,28 @@ public class EditorActivity extends AppCompatActivity implements
             int owner = cursor.getInt(ownerColumnIndex);
             float weight = cursor.getFloat(weightColumnIndex);
             float price = cursor.getFloat(priceColumnIndex);
+            float length = cursor.getFloat(lengthColumnIndex);
+            float width = cursor.getFloat(widthColumnIndex);
+            float height = cursor.getFloat(heightColumnIndex);
 
             // Update the views on the screen with the values from the database
             // first format the numbers
             DecimalFormat weightFormat = new DecimalFormat("###0.000");
             DecimalFormat priceFormat = new DecimalFormat("###0.00");
+            DecimalFormat dimFormat = new DecimalFormat("###0.000");
             String formattedWeight = weightFormat.format(weight);
             String formattedPrice = priceFormat.format(price);
+            String formattedLength = dimFormat.format(length);
+            String formattedWidth = dimFormat.format(width);
+            String formattedHeight = dimFormat.format(height);
 
             mNameEditText.setText(name);
             mTypeEditText.setText(type);
             mWeightEditText.setText(formattedWeight);
             mPriceEditText.setText(formattedPrice);
-
+            mLengthEditText.setText(formattedLength);
+            mWidthEditText.setText(formattedWidth);
+            mHeightEditText.setText(formattedHeight);
             // Owner is a dropdown spinner, so map the constant value from the database
             // into one of the dropdown options (0 is BOTH, 1 is OTTO, 2 is LINDE, 3 is OTHER).
             // Then call setSelection() so that option is displayed on screen as the current selection.
@@ -450,6 +510,9 @@ public class EditorActivity extends AppCompatActivity implements
         mTypeEditText.setText("");
         mWeightEditText.setText("");
         mPriceEditText.setText("");
+        mLengthEditText.setText("");
+        mWidthEditText.setText("");
+        mHeightEditText.setText("");
         mOwnerSpinner.setSelection(0); // Select "Unknown" gender
     }
 

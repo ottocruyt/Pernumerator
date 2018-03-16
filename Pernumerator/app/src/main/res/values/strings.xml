@@ -92,17 +92,27 @@
     <!-- Text hint for type field in the editor [CHAR LIMIT=30] -->
     <string name="hint_item_type">Type</string>
 
-    <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
+    <!-- Text hint for weight field in the editor [CHAR LIMIT=30] -->
     <string name="hint_item_weight">Weight</string>
 
     <!-- Units for weight of the item (kilograms) [CHAR LIMIT=5] -->
     <string name="unit_item_weight">kg</string>
 
-    <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
+    <!-- Text hint for price field in the editor [CHAR LIMIT=30] -->
     <string name="hint_item_price">Price</string>
 
-    <!-- Units for weight of the item (kilograms) [CHAR LIMIT=5] -->
+    <!-- Units for price of the item (EUR) [CHAR LIMIT=5] -->
     <string name="unit_item_price">EUR</string>
+
+    <!-- Text hint for length field in the editor [CHAR LIMIT=30] -->
+    <string name="hint_item_length">Length</string>
+    <!-- Text hint for width field in the editor [CHAR LIMIT=30] -->
+    <string name="hint_item_width">Width</string>
+    <!-- Text hint for height field in the editor [CHAR LIMIT=30] -->
+    <string name="hint_item_height">Height</string>
+
+    <!-- Units for dim of the item (m) [CHAR LIMIT=5] -->
+    <string name="unit_item_dim">m</string>
 
 
     <!-- Label for dropdown menu option if the Item's owner is Other [CHAR LIMIT=20] -->

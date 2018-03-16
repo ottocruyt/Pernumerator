@@ -142,6 +142,66 @@
                     style="@style/EditorUnitsStyle"
                     android:text="@string/unit_item_price" />
             </RelativeLayout>
+            <!-- Input fields Length -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:paddingLeft="4dp">
+
+                <!-- Length field -->
+                <EditText
+                    android:id="@+id/edit_item_length"
+                    style="@style/EditorFieldStyle"
+                    android:hint="@string/hint_item_length"
+                    android:inputType="numberDecimal" />
+
+                <!-- Units for length (m) -->
+                <TextView
+                    android:id="@+id/label_dim_units_l"
+                    style="@style/EditorUnitsStyle"
+                    android:text="@string/unit_item_dim" />
+            </RelativeLayout>
+            <!-- Input fields Width -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:paddingLeft="4dp">
+
+                <!-- Width field -->
+                <EditText
+                    android:id="@+id/edit_item_width"
+                    style="@style/EditorFieldStyle"
+                    android:hint="@string/hint_item_width"
+                    android:inputType="numberDecimal" />
+
+                <!-- Units for width (m) -->
+                <TextView
+                    android:id="@+id/label_dim_units_w"
+                    style="@style/EditorUnitsStyle"
+                    android:text="@string/unit_item_dim" />
+            </RelativeLayout>
+            <!-- Input fields Height -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:paddingLeft="4dp">
+
+                <!-- Height field -->
+                <EditText
+                    android:id="@+id/edit_item_height"
+                    style="@style/EditorFieldStyle"
+                    android:hint="@string/hint_item_height"
+                    android:inputType="numberDecimal" />
+
+                <!-- Units for height (m) -->
+                <TextView
+                    android:id="@+id/label_dim_units_h"
+                    style="@style/EditorUnitsStyle"
+                    android:text="@string/unit_item_dim" />
+            </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
