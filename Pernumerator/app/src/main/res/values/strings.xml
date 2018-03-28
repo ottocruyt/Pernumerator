@@ -38,8 +38,14 @@
     <!-- Label for editor overflow menu option that deletes the current item [CHAR LIMIT=20] -->
     <string name="action_delete">Delete</string>
 
+    <!-- Label for editor overflow menu option that edits the current item [CHAR LIMIT=20] -->
+    <string name="action_edit">Edit</string>
+
     <!-- Toast message in editor when new item has been successfully inserted [CHAR LIMIT=NONE] -->
     <string name="editor_insert_item_successful">Item saved</string>
+
+    <!-- Toast message in editor when entering edit mode [CHAR LIMIT=NONE] -->
+    <string name="editor_edit_mode_on">Edit mode enabled</string>
 
     <!-- Toast message in editor when new item has failed to be inserted [CHAR LIMIT=NONE] -->
     <string name="editor_insert_item_failed">Error with saving Item</string>

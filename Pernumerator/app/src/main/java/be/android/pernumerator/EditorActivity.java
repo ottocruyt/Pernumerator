@@ -27,18 +27,23 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 import be.android.pernumerator.data.ItemContract;
 
@@ -334,8 +339,10 @@ public class EditorActivity extends AppCompatActivity implements
         super.onPrepareOptionsMenu(menu);
         // If this is a new item, hide the "Delete" menu item.
         if (mCurrentItemUri == null) {
-            MenuItem menuItem = menu.findItem(R.id.action_delete);
-            menuItem.setVisible(false);
+            MenuItem menuItemDelete = menu.findItem(R.id.action_delete);
+            menuItemDelete.setVisible(false);
+            MenuItem menuItemEdit = menu.findItem(R.id.action_edit);
+            menuItemEdit.setVisible(false);
         }
         return true;
     }
@@ -358,6 +365,13 @@ public class EditorActivity extends AppCompatActivity implements
                 // Pop up confirmation dialog for deletion
                 showDeleteConfirmationDialog();
                 return true;
+            // Respond to a click on the "Edit" menu option
+            case R.id.action_edit:
+                enableAllViews(true);
+                // Show toast confirming edit mode
+                Toast.makeText(this, getString(R.string.editor_edit_mode_on),
+                        Toast.LENGTH_SHORT).show();
+                return false; // false means don't go to the catalog, but stay in edit activity
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
                 // If the item hasn't changed, continue with navigating up to parent activity
@@ -501,6 +515,8 @@ public class EditorActivity extends AppCompatActivity implements
                     break;
             }
         }
+        //disable views for editing
+        enableAllViews(false);
     }
 
     @Override
@@ -599,5 +615,44 @@ public class EditorActivity extends AppCompatActivity implements
 
         // Close the activity
         finish();
+    }
+    // enable - disable all edit fields
+    private void enableAllViews(boolean enableDisable) {
+        //ArrayList<EditText> myEditTextList = new ArrayList<EditText>();
+        View editParentLayout = (View) findViewById(R.id.edit_layout_parent);
+        ArrayList<View> allViewsWithinMyParentView = getAllChildren(editParentLayout);
+        for (View child : allViewsWithinMyParentView) {
+            if (child instanceof EditText) {
+                child.setEnabled(enableDisable);
+                Log.d("Child", "child found");
+            } //else if (child instanceof Spinner) {                  --> doesn't find spinner
+              //  child.setEnabled(enableDisable);
+        }
+        mOwnerSpinner.setEnabled(enableDisable); //method doesn't work for spinner - so fix with hardcode
+
+    }
+
+    private ArrayList<View> getAllChildren(View v) {
+
+        if (!(v instanceof ViewGroup)) {
+            ArrayList<View> viewArrayList = new ArrayList<View>();
+            viewArrayList.add(v);
+            return viewArrayList;
+        }
+
+        ArrayList<View> result = new ArrayList<View>();
+
+        ViewGroup vg = (ViewGroup) v;
+        for (int i = 0; i < vg.getChildCount(); i++) {
+
+            View child = vg.getChildAt(i);
+
+            ArrayList<View> viewArrayList = new ArrayList<View>();
+            viewArrayList.add(v);
+            viewArrayList.addAll(getAllChildren(child));
+
+            result.addAll(viewArrayList);
+        }
+        return result;
     }
 }

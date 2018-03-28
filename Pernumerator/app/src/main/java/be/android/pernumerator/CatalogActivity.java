@@ -37,9 +37,12 @@ import be.android.pernumerator.data.ItemContract;
 
 //TODO add type spinner with possibility of adding a new one
 //TODO add barcode field
-//TODO editor not enable for viewing
+//TODO long press goes directly into edit mode
 //TODO add image support
-//TODO databse update handler
+//TODO database update handler
+//TODO remove toast "item updated" if nothing was updated (but also not new item)
+//TODO add header for item fields in editor (not clear which is what)
+//TODO change title bar for "viewing" an item
 
 /**
  * Displays list of items that were entered and stored in the app.
