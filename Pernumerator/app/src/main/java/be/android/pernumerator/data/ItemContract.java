@@ -140,6 +140,15 @@ public final class ItemContract {
         public final static String COLUMN_ITEM_DIM_W = "width";
         public final static String COLUMN_ITEM_DIM_H = "height";
 
+        /**
+         *
+         * Image of the item
+         *
+         * Type: BLOB
+         *
+         */
+        public final static String COLUMN_ITEM_IMG = "image";
+
 
 
 

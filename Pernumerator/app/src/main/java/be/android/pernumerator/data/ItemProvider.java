@@ -186,6 +186,8 @@ public class ItemProvider extends ContentProvider {
 
         // No need to check the type, any value is valid (including null).
 
+        // No need to check the image, any value is valid (including null).
+
         // Get writable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
@@ -295,6 +297,8 @@ public class ItemProvider extends ContentProvider {
         }
 
         // No need to check the Type, any value is valid (including null).
+
+        // No need to check the image, any value is valid (including null).
 
         // If there are no values to update, then don't try to update the database
         if (values.size() == 0) {

@@ -38,6 +38,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -46,6 +47,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import be.android.pernumerator.data.ItemContract;
+import be.android.pernumerator.data.ItemImageHandler;
 
 /**
  * Allows user to create a new item or edit an existing one.
@@ -67,6 +69,9 @@ public class EditorActivity extends AppCompatActivity implements
 
     /** EditText field to enter the item's weight */
     private EditText mWeightEditText;
+
+    /** ImageView field */
+    private ImageView mImageView;
 
     /** EditText field to enter the item's price */
     private EditText mPriceEditText;
@@ -140,6 +145,7 @@ public class EditorActivity extends AppCompatActivity implements
         mLengthEditText = (EditText) findViewById(R.id.edit_item_length);
         mWidthEditText = (EditText) findViewById(R.id.edit_item_width);
         mHeightEditText = (EditText) findViewById(R.id.edit_item_height);
+        mImageView = (ImageView) findViewById(R.id.edit_item_image);
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
@@ -152,6 +158,7 @@ public class EditorActivity extends AppCompatActivity implements
         mWidthEditText.setOnTouchListener(mTouchListener);
         mHeightEditText.setOnTouchListener(mTouchListener);
         mOwnerSpinner.setOnTouchListener(mTouchListener);
+        mImageView.setOnTouchListener(mTouchListener);
 
         setupSpinner();
     }
@@ -213,6 +220,7 @@ public class EditorActivity extends AppCompatActivity implements
         String lengthString = mLengthEditText.getText().toString().trim();
         String widthString = mWidthEditText.getText().toString().trim();
         String heightString = mHeightEditText.getText().toString().trim();
+
 
 
         // Check if this is supposed to be a new item
@@ -439,7 +447,8 @@ public class EditorActivity extends AppCompatActivity implements
                 ItemContract.ItemEntry.COLUMN_ITEM_PRICE,
                 ItemContract.ItemEntry.COLUMN_ITEM_DIM_L,
                 ItemContract.ItemEntry.COLUMN_ITEM_DIM_W,
-                ItemContract.ItemEntry.COLUMN_ITEM_DIM_H};
+                ItemContract.ItemEntry.COLUMN_ITEM_DIM_H,
+                ItemContract.ItemEntry.COLUMN_ITEM_IMG};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
@@ -469,6 +478,7 @@ public class EditorActivity extends AppCompatActivity implements
             int lengthColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_DIM_L);
             int widthColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_DIM_W);
             int heightColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_DIM_H);
+            int imageColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_IMG);
 
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
@@ -479,8 +489,10 @@ public class EditorActivity extends AppCompatActivity implements
             float length = cursor.getFloat(lengthColumnIndex);
             float width = cursor.getFloat(widthColumnIndex);
             float height = cursor.getFloat(heightColumnIndex);
+            byte[] image = cursor.getBlob(imageColumnIndex);
 
             // Update the views on the screen with the values from the database
+
             // first format the numbers
             DecimalFormat weightFormat = new DecimalFormat("###0.000");
             DecimalFormat priceFormat = new DecimalFormat("###0.00");
@@ -490,7 +502,7 @@ public class EditorActivity extends AppCompatActivity implements
             String formattedLength = dimFormat.format(length);
             String formattedWidth = dimFormat.format(width);
             String formattedHeight = dimFormat.format(height);
-
+            //set the text
             mNameEditText.setText(name);
             mTypeEditText.setText(type);
             mWeightEditText.setText(formattedWeight);
@@ -498,6 +510,14 @@ public class EditorActivity extends AppCompatActivity implements
             mLengthEditText.setText(formattedLength);
             mWidthEditText.setText(formattedWidth);
             mHeightEditText.setText(formattedHeight);
+            //set the image
+            if (image!=null){
+                mImageView.setImageBitmap(ItemImageHandler.getImage(image));
+            }
+            else {
+                mImageView.setImageResource(R.drawable.ic_box_empty);
+            }
+
             // Owner is a dropdown spinner, so map the constant value from the database
             // into one of the dropdown options (0 is BOTH, 1 is OTTO, 2 is LINDE, 3 is OTHER).
             // Then call setSelection() so that option is displayed on screen as the current selection.
@@ -529,6 +549,7 @@ public class EditorActivity extends AppCompatActivity implements
         mLengthEditText.setText("");
         mWidthEditText.setText("");
         mHeightEditText.setText("");
+        mImageView.setImageResource(R.drawable.ic_box_empty); // Select default empty box
         mOwnerSpinner.setSelection(0); // Select "Unknown" gender
     }
 
@@ -629,6 +650,7 @@ public class EditorActivity extends AppCompatActivity implements
               //  child.setEnabled(enableDisable);
         }
         mOwnerSpinner.setEnabled(enableDisable); //method doesn't work for spinner - so fix with hardcode
+        mImageView.setEnabled(enableDisable); //method doesn't work for image - so fix with hardcode
 
     }
 

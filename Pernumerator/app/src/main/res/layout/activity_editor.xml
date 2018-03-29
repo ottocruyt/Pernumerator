@@ -205,4 +205,38 @@
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/container_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <!-- Label -->
+        <TextView
+            style="@style/CategoryStyle"
+            android:text="@string/category_image" />
+        <!-- Input fields image-->
+        <LinearLayout
+            android:id="@+id/container_image_input_fields"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="vertical"
+            android:paddingLeft="4dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:paddingLeft="4dp">
+
+                <!-- image field -->
+                <ImageView
+                    android:id="@+id/edit_item_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_box_empty"/>
+            </RelativeLayout>
+        </LinearLayout>
+
+    </LinearLayout>
 </LinearLayout>

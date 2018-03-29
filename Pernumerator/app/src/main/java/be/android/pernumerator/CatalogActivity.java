@@ -22,6 +22,8 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -33,7 +35,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.io.IOException;
+
 import be.android.pernumerator.data.ItemContract;
+import be.android.pernumerator.data.ItemImageHandler;
 
 //TODO add type spinner with possibility of adding a new one
 //TODO add barcode field
@@ -43,6 +48,7 @@ import be.android.pernumerator.data.ItemContract;
 //TODO remove toast "item updated" if nothing was updated (but also not new item)
 //TODO add header for item fields in editor (not clear which is what)
 //TODO change title bar for "viewing" an item
+//TODO check if this is the correct place for the image handler to be used
 
 /**
  * Displays list of items that were entered and stored in the app.
@@ -112,10 +118,11 @@ public class CatalogActivity extends AppCompatActivity implements
     /**
      * Helper method to insert hardcoded item data into the database. For debugging purposes only.
      */
-    private void insertItem() {
+    private void insertItem() throws IOException {
         // Create a ContentValues object where column names are the keys,
         // and oneplus 5T's item attributes are the values.
         ContentValues values = new ContentValues();
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.oneplus5t);
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_NAME, "Oneplus 5T");
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_TYPE, "Electronics");
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_OWNER, ItemContract.ItemEntry.OWNER_OTTO);
@@ -124,6 +131,7 @@ public class CatalogActivity extends AppCompatActivity implements
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_DIM_L, 0.15);
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_DIM_W, 0.10);
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_DIM_H, 0.002);
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_IMG, ItemImageHandler.getBytes(bitmap));
 
         // Insert a new row for Oneplus into the provider using the ContentResolver.
         // Use the {@link ItemEntry#CONTENT_URI} to indicate that we want to insert
@@ -154,7 +162,12 @@ public class CatalogActivity extends AppCompatActivity implements
         switch (item.getItemId()) {
             // Respond to a click on the "Insert dummy data" menu option
             case R.id.action_insert_dummy_data:
-                insertItem();
+                try {
+                    insertItem();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("IO", "onOptionsItemSelected: IOException");
+                }
                 return true;
             // Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
