@@ -42,7 +42,6 @@ import be.android.pernumerator.data.ItemImageHandler;
 
 //TODO add type spinner with possibility of adding a new one
 //TODO add barcode field
-//TODO long press goes directly into edit mode
 //TODO database update handler
 //TODO remove toast "item updated" if nothing was updated (but also not new item)
 //TODO add header for item fields in editor (not clear which is what)
@@ -94,7 +93,7 @@ public class CatalogActivity extends AppCompatActivity implements
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 // Create new intent to go to {@link EditorActivity}
                 Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
-
+                intent.putExtra("whichClickListener", "short");
                 // Form the content URI that represents the specific item that was clicked on,
                 // by appending the "id" (passed as input to this method) onto the
                 // {@link ItemEntry#CONTENT_URI}.
@@ -115,7 +114,7 @@ public class CatalogActivity extends AppCompatActivity implements
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
                 // Create new intent to go to {@link EditorActivity}
                 Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
-
+                intent.putExtra("whichClickListener", "long");
                 // Form the content URI that represents the specific item that was clicked on,
                 // by appending the "id" (passed as input to this method) onto the
                 // {@link ItemEntry#CONTENT_URI}.

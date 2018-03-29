@@ -71,8 +71,15 @@ public class EditorActivity extends AppCompatActivity implements
     private final int SELECT_PHOTO = 1; // for gallery picker, used in switch case
     private final int SELECT_GALLERY_CAMERA = 21356; // for gallery or camera picker, using easyImage library
 
+    /** view or edit mode depending on the intent extra*/
+
+    private final String LONG_CLICK_LISTENER = "long";
+    private final String SHORT_CLICK_LISTENER = "short";
+
     /** Content URI for the existing item (null if it's a new item) */
     private Uri mCurrentItemUri;
+
+    private String mWhichClickListener;
 
     /** EditText field to enter the item's name */
     private EditText mNameEditText;
@@ -150,20 +157,19 @@ public class EditorActivity extends AppCompatActivity implements
         // in order to figure out if we're creating a new item or editing an existing one.
         Intent intent = getIntent();
         mCurrentItemUri = intent.getData();
+        mWhichClickListener = intent.getStringExtra("whichClickListener");
 
         // If the intent DOES NOT contain a item content URI, then we know that we are
         // creating a new item.
         if (mCurrentItemUri == null) {
-            // This is a new item, so change the app bar to say "Add a Item"
+            // This is a new item, so change the app bar to say "Add an Item"
             setTitle(getString(R.string.editor_activity_title_new_item));
 
             // Invalidate the options menu, so the "Delete" menu option can be hidden.
             // (It doesn't make sense to delete an item that hasn't been created yet.)
             invalidateOptionsMenu();
         } else {
-            // Otherwise this is an existing item, so change app bar to say "Edit Item"
-            setTitle(getString(R.string.editor_activity_title_view_item));
-
+            // Otherwise this is an existing item
             // Initialize a loader to read the item data from the database
             // and display the current values in the editor
             getLoaderManager().initLoader(EXISTING_ITEM_LOADER, null, this);
@@ -424,11 +430,7 @@ public class EditorActivity extends AppCompatActivity implements
                 return true;
             // Respond to a click on the "Edit" menu option
             case R.id.action_edit:
-                enableAllViews(true);
-                // Show toast confirming edit mode
-                Toast.makeText(this, getString(R.string.editor_edit_mode_on),
-                        Toast.LENGTH_SHORT).show();
-                setTitle(R.string.editor_activity_title_edit_item);
+                goToEditMode();
                 return false; // false means don't go to the catalog, but stay in edit activity
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
@@ -585,8 +587,19 @@ public class EditorActivity extends AppCompatActivity implements
                     break;
             }
         }
-        //disable views for editing
-        enableAllViews(false);
+
+        // should be either in view mode if coming from short click, or edit mode coming from long click
+        switch (mWhichClickListener){
+            case SHORT_CLICK_LISTENER:
+                //coming from short click, so app bar to say "View Item"
+                goToViewMode();
+                break;
+            case LONG_CLICK_LISTENER:
+                //coming from long click, so go to edit mode
+                goToEditMode();
+                break;
+        }
+
     }
 
     @Override
@@ -604,10 +617,10 @@ public class EditorActivity extends AppCompatActivity implements
     }
 
     /**
-     *
-     * @param requestCode
-     * @param resultCode
-     * @param imageReturnedIntent
+     * handle the result of a photo selection
+     * @param requestCode SELECT_PHOTO or SELECT_GALLERY_CAMERA
+     * @param resultCode RESULT_OK
+     * @param imageReturnedIntent the returned intent with the selected image inside
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
@@ -627,6 +640,7 @@ public class EditorActivity extends AppCompatActivity implements
                     }
 
                 }
+                break;
             case SELECT_GALLERY_CAMERA:
                 if(resultCode == RESULT_OK){
                     EasyImage.handleActivityResult(requestCode, resultCode, imageReturnedIntent, this, new DefaultCallback() {
@@ -657,6 +671,7 @@ public class EditorActivity extends AppCompatActivity implements
                         }
                     });
                 }
+                break;
 
         }
     }
@@ -745,6 +760,21 @@ public class EditorActivity extends AppCompatActivity implements
 
         // Close the activity
         finish();
+    }
+
+    private void goToEditMode() {
+        enableAllViews(true);
+        // Show toast confirming edit mode
+        Toast.makeText(this, getString(R.string.editor_edit_mode_on),
+                Toast.LENGTH_SHORT).show();
+        setTitle(R.string.editor_activity_title_edit_item);
+    }
+    private void goToViewMode() {
+        enableAllViews(false);
+        // Show toast confirming view mode
+        Toast.makeText(this, getString(R.string.editor_edit_mode_off),
+                Toast.LENGTH_SHORT).show();
+        setTitle(R.string.editor_activity_title_view_item);
     }
 
     /** enable - disable all edit fields
