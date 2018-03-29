@@ -46,7 +46,6 @@ import be.android.pernumerator.data.ItemImageHandler;
 //TODO database update handler
 //TODO remove toast "item updated" if nothing was updated (but also not new item)
 //TODO add header for item fields in editor (not clear which is what)
-//TODO change title bar for "viewing" an item
 //TODO check if this is the correct place for the image handler to be used
 //TODO delete image after being added.
 
@@ -110,6 +109,30 @@ public class CatalogActivity extends AppCompatActivity implements
                 startActivity(intent);
             }
         });
+        // Setup the item LONG click listener
+        itemListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+                // Create new intent to go to {@link EditorActivity}
+                Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
+
+                // Form the content URI that represents the specific item that was clicked on,
+                // by appending the "id" (passed as input to this method) onto the
+                // {@link ItemEntry#CONTENT_URI}.
+                // For example, the URI would be "content://be.android.pernumerator/be.android.pernumerator/2"
+                // if the item with ID 2 was clicked on.
+                Uri currentItemUri = ContentUris.withAppendedId(ItemContract.ItemEntry.CONTENT_URI, id);
+
+                // Set the URI on the data field of the intent
+                intent.setData(currentItemUri);
+
+                // Launch the {@link EditorActivity} to display the data for the current item.
+                startActivity(intent);
+                return true;
+            }
+        });
+
+
 
         // Kick off the loader
         getLoaderManager().initLoader(ITEM_LOADER, null, this);

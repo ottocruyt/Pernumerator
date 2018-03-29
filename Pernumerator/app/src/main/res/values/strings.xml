@@ -32,6 +32,9 @@
     <!-- Title for the activity to edit an existing item [CHAR LIMIT=20] -->
     <string name="editor_activity_title_edit_item">Edit Item</string>
 
+    <!-- Title for the activity to view an existing item [CHAR LIMIT=20] -->
+    <string name="editor_activity_title_view_item">View Item</string>
+
     <!-- Label for editor menu option to save item and leave editor [CHAR LIMIT=20] -->
     <string name="action_save">Save</string>
 

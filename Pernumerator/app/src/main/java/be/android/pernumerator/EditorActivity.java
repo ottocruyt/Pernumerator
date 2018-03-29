@@ -162,7 +162,7 @@ public class EditorActivity extends AppCompatActivity implements
             invalidateOptionsMenu();
         } else {
             // Otherwise this is an existing item, so change app bar to say "Edit Item"
-            setTitle(getString(R.string.editor_activity_title_edit_item));
+            setTitle(getString(R.string.editor_activity_title_view_item));
 
             // Initialize a loader to read the item data from the database
             // and display the current values in the editor
@@ -428,6 +428,7 @@ public class EditorActivity extends AppCompatActivity implements
                 // Show toast confirming edit mode
                 Toast.makeText(this, getString(R.string.editor_edit_mode_on),
                         Toast.LENGTH_SHORT).show();
+                setTitle(R.string.editor_activity_title_edit_item);
                 return false; // false means don't go to the catalog, but stay in edit activity
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
