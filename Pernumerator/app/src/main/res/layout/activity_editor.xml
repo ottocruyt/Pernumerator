@@ -161,7 +161,7 @@
                 <TextView
                     android:id="@+id/label_dim_units_l"
                     style="@style/EditorUnitsStyle"
-                    android:text="@string/unit_item_dim" />
+                    android:text="@string/unit_item_dim_L" />
             </RelativeLayout>
             <!-- Input fields Width -->
             <RelativeLayout
@@ -181,7 +181,7 @@
                 <TextView
                     android:id="@+id/label_dim_units_w"
                     style="@style/EditorUnitsStyle"
-                    android:text="@string/unit_item_dim" />
+                    android:text="@string/unit_item_dim_W" />
             </RelativeLayout>
             <!-- Input fields Height -->
             <RelativeLayout
@@ -201,7 +201,7 @@
                 <TextView
                     android:id="@+id/label_dim_units_h"
                     style="@style/EditorUnitsStyle"
-                    android:text="@string/unit_item_dim" />
+                    android:text="@string/unit_item_dim_H" />
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>

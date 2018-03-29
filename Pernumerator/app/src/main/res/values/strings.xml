@@ -131,7 +131,13 @@
     <string name="hint_item_height">Height</string>
 
     <!-- Units for dim of the item (m) [CHAR LIMIT=5] -->
-    <string name="unit_item_dim">m</string>
+    <string name="unit_item_dim_L">m L</string>
+
+    <!-- Units for dim of the item (m) [CHAR LIMIT=5] -->
+    <string name="unit_item_dim_W">m W</string>
+
+    <!-- Units for dim of the item (m) [CHAR LIMIT=5] -->
+    <string name="unit_item_dim_H">m H</string>
 
 
     <!-- Label for dropdown menu option if the Item's owner is Other [CHAR LIMIT=20] -->

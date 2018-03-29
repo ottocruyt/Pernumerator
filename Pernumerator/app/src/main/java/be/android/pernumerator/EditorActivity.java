@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package be.android.pernumerator;
-
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentValues;
@@ -29,7 +28,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Layout;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -41,7 +39,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -377,9 +374,11 @@ public class EditorActivity extends AppCompatActivity implements
                 Toast.makeText(this, getString(R.string.editor_update_item_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
-                // Otherwise, the update was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_update_item_successful),
-                        Toast.LENGTH_SHORT).show();
+                // Otherwise, the update was successful and we can display a toast. (unless nothing was changed)
+                if (mItemHasChanged){
+                    Toast.makeText(this, getString(R.string.editor_update_item_successful),
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         }
         return exitEditorAfterReturn;
@@ -599,6 +598,8 @@ public class EditorActivity extends AppCompatActivity implements
                 goToEditMode();
                 break;
         }
+        //avoid double callbacks by destroying the loader
+        getLoaderManager().destroyLoader(EXISTING_ITEM_LOADER);
 
     }
 
@@ -783,7 +784,7 @@ public class EditorActivity extends AppCompatActivity implements
      */
     private void enableAllViews(boolean enableDisable) {
         //ArrayList<EditText> myEditTextList = new ArrayList<EditText>();
-        View editParentLayout = (View) findViewById(R.id.edit_layout_parent);
+        View editParentLayout = findViewById(R.id.edit_layout_parent);
         ArrayList<View> allViewsWithinMyParentView = getAllChildren(editParentLayout);
         for (View child : allViewsWithinMyParentView) {
             if (child instanceof EditText) {
