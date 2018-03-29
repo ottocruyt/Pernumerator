@@ -45,14 +45,18 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import be.android.pernumerator.data.ItemContract;
 import be.android.pernumerator.data.ItemImageHandler;
+import pl.aprilapps.easyphotopicker.DefaultCallback;
+import pl.aprilapps.easyphotopicker.EasyImage;
 
 /**
  * Allows user to create a new item or edit an existing one.
@@ -64,8 +68,8 @@ public class EditorActivity extends AppCompatActivity implements
     private static final int EXISTING_ITEM_LOADER = 0;
 
     /** Action type requested for item image selection */
-
-    private final int SELECT_PHOTO = 1;
+    private final int SELECT_PHOTO = 1; // for gallery picker, used in switch case
+    private final int SELECT_GALLERY_CAMERA = 21356; // for gallery or camera picker, using easyImage library
 
     /** Content URI for the existing item (null if it's a new item) */
     private Uri mCurrentItemUri;
@@ -126,9 +130,14 @@ public class EditorActivity extends AppCompatActivity implements
     private View.OnClickListener mClickListenerImage = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-            photoPickerIntent.setType("image/*");
-            startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+
+            // picking via easyImage library
+            EasyImage.openChooserWithGallery(EditorActivity.this,"Select an image",0);
+
+            // code for gallery picker
+            //Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            //photoPickerIntent.setType("image/*");
+            //startActivityForResult(photoPickerIntent, SELECT_PHOTO);
         }
     };
 
@@ -617,6 +626,37 @@ public class EditorActivity extends AppCompatActivity implements
                     }
 
                 }
+            case SELECT_GALLERY_CAMERA:
+                if(resultCode == RESULT_OK){
+                    EasyImage.handleActivityResult(requestCode, resultCode, imageReturnedIntent, this, new DefaultCallback() {
+                        @Override
+                        public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
+                            //Some error handling
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onImagesPicked(List<File> imageFiles, EasyImage.ImageSource source, int type) {
+                            File pickedImage = imageFiles.get(0); //only take the first element of the list
+                            String filePath = pickedImage.getPath();
+                            Bitmap bitmapPickedImage = BitmapFactory.decodeFile(filePath);
+                            mImageView.setImageBitmap(bitmapPickedImage);
+                            mImageNewSelected = bitmapPickedImage;
+                        }
+
+                        @Override
+                        public void onCanceled(EasyImage.ImageSource source, int type) {
+                            //Cancel handling, you might wanna remove taken photo if it was canceled
+                            if (source == EasyImage.ImageSource.CAMERA) {
+                                File photoFile = EasyImage.lastlyTakenButCanceledPhoto(EditorActivity.this);
+                                if (photoFile != null){
+                                    photoFile.delete();
+                                }
+                            }
+                        }
+                    });
+                }
+
         }
     }
 
@@ -748,5 +788,11 @@ public class EditorActivity extends AppCompatActivity implements
             result.addAll(viewArrayList);
         }
         return result;
+    }
+    @Override
+    protected void onDestroy() {
+        // Clear any configuration for EasyImage that was done!
+        EasyImage.clearConfiguration(this);
+        super.onDestroy();
     }
 }
