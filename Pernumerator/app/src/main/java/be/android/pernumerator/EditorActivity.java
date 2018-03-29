@@ -23,6 +23,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -43,6 +45,9 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -58,6 +63,10 @@ public class EditorActivity extends AppCompatActivity implements
     /** Identifier for the item data loader */
     private static final int EXISTING_ITEM_LOADER = 0;
 
+    /** Action type requested for item image selection */
+
+    private final int SELECT_PHOTO = 1;
+
     /** Content URI for the existing item (null if it's a new item) */
     private Uri mCurrentItemUri;
 
@@ -72,6 +81,7 @@ public class EditorActivity extends AppCompatActivity implements
 
     /** ImageView field */
     private ImageView mImageView;
+    private Bitmap mImageNewSelected = null;
 
     /** EditText field to enter the item's price */
     private EditText mPriceEditText;
@@ -105,6 +115,20 @@ public class EditorActivity extends AppCompatActivity implements
         public boolean onTouch(View view, MotionEvent motionEvent) {
             mItemHasChanged = true;
             return false;
+        }
+    };
+
+    /**
+     * Click listener for the image. Start image picker when pressed.
+     *
+     */
+
+    private View.OnClickListener mClickListenerImage = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            photoPickerIntent.setType("image/*");
+            startActivityForResult(photoPickerIntent, SELECT_PHOTO);
         }
     };
 
@@ -159,6 +183,9 @@ public class EditorActivity extends AppCompatActivity implements
         mHeightEditText.setOnTouchListener(mTouchListener);
         mOwnerSpinner.setOnTouchListener(mTouchListener);
         mImageView.setOnTouchListener(mTouchListener);
+
+        // Setup OnClickListener for starting image picker
+        mImageView.setOnClickListener(mClickListenerImage);
 
         setupSpinner();
     }
@@ -221,6 +248,8 @@ public class EditorActivity extends AppCompatActivity implements
         String widthString = mWidthEditText.getText().toString().trim();
         String heightString = mHeightEditText.getText().toString().trim();
 
+        //If there was a new image selected mImageNewSelected will be notNull
+
 
 
         // Check if this is supposed to be a new item
@@ -229,7 +258,7 @@ public class EditorActivity extends AppCompatActivity implements
                 TextUtils.isEmpty(nameString) && TextUtils.isEmpty(typeString) &&
                 TextUtils.isEmpty(weightString) && mOwner == ItemContract.ItemEntry.OWNER_BOTH &&
                 TextUtils.isEmpty(priceString) && TextUtils.isEmpty(lengthString) &&
-                TextUtils.isEmpty(widthString) && TextUtils.isEmpty(heightString)) {
+                TextUtils.isEmpty(widthString) && TextUtils.isEmpty(heightString) && mImageNewSelected == null) {
             // Since no fields were modified, we can return early without creating a new item.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             // -> even if you press V, if nothing is changed it will just not save it and go to main
@@ -292,6 +321,17 @@ public class EditorActivity extends AppCompatActivity implements
         }
         // put it in the values
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_DIM_H, height);
+
+        // If an image is provided by the user, save it
+        if (mImageNewSelected != null){
+
+            try {
+                values.put(ItemContract.ItemEntry.COLUMN_ITEM_IMG, ItemImageHandler.getBytes(ItemImageHandler.resizeBitmap(mImageNewSelected,250)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
 
         // Determine if this is a new or existing item by checking if mCurrentItemUri is null or not
         if (mCurrentItemUri == null) {
@@ -554,6 +594,34 @@ public class EditorActivity extends AppCompatActivity implements
     }
 
     /**
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param imageReturnedIntent
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+
+        switch(requestCode) {
+            case SELECT_PHOTO:
+                if(resultCode == RESULT_OK){
+                    try {
+                        final Uri imageUri = imageReturnedIntent.getData();
+                        final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                        final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                        mImageView.setImageBitmap(selectedImage);
+                        mImageNewSelected = selectedImage;
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+        }
+    }
+
+
+    /**
      * Show a dialog that warns the user there are unsaved changes that will be lost
      * if they continue leaving the editor.
      *
@@ -637,7 +705,11 @@ public class EditorActivity extends AppCompatActivity implements
         // Close the activity
         finish();
     }
-    // enable - disable all edit fields
+
+    /** enable - disable all edit fields
+     *
+     * @param enableDisable: true = enable, false = disable
+     */
     private void enableAllViews(boolean enableDisable) {
         //ArrayList<EditText> myEditTextList = new ArrayList<EditText>();
         View editParentLayout = (View) findViewById(R.id.edit_layout_parent);

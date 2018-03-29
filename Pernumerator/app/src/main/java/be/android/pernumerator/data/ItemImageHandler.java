@@ -19,4 +19,11 @@ public class ItemImageHandler {
     public static Bitmap getImage(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
+
+    // resize bitmap (otherwise crash while getting it with cursor, which is limited to 1 Mb
+    public static Bitmap resizeBitmap(Bitmap bitmap, int desiredWidth) {
+        float aspectRatio = (float)bitmap.getWidth()/(float)bitmap.getHeight();
+        int desiredHeight = Math.round(desiredWidth / aspectRatio);
+        return Bitmap.createScaledBitmap(bitmap, desiredWidth,desiredHeight, false);
+    }
 }
