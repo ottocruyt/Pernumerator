@@ -30,6 +30,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -73,6 +74,11 @@ public class EditorActivity extends AppCompatActivity implements
     private final String LONG_CLICK_LISTENER = "long";
     private final String SHORT_CLICK_LISTENER = "short";
 
+    /** set new or delete image from long click context menu: menu options*/ // not referring to strings.xml!!! not good
+    private final String CONTEXT_MENU_NEW = "Select New";
+    private final String CONTEXT_MENU_DELETE = "Delete";
+
+
     /** Content URI for the existing item (null if it's a new item) */
     private Uri mCurrentItemUri;
 
@@ -90,7 +96,6 @@ public class EditorActivity extends AppCompatActivity implements
     /** ImageView field */
     private ImageView mImageView;
     private Bitmap mImageNewSelected = null;
-
     /** EditText field to enter the item's price */
     private EditText mPriceEditText;
 
@@ -138,12 +143,13 @@ public class EditorActivity extends AppCompatActivity implements
             // picking via easyImage library
             EasyImage.openChooserWithGallery(EditorActivity.this,"Select an image",0);
 
-            // code for gallery picker
+            // code for gallery picker OBSOLETE
             //Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
             //photoPickerIntent.setType("image/*");
             //startActivityForResult(photoPickerIntent, SELECT_PHOTO);
         }
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,6 +204,9 @@ public class EditorActivity extends AppCompatActivity implements
 
         // Setup OnClickListener for starting image picker
         mImageView.setOnClickListener(mClickListenerImage);
+
+        // Setup ContextMenuListener for imageview
+        registerForContextMenu(mImageView);
 
         setupSpinner();
     }
@@ -334,16 +343,16 @@ public class EditorActivity extends AppCompatActivity implements
         // put it in the values
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_DIM_H, height);
 
-        // If an image is provided by the user, save it
-        if (mImageNewSelected != null){
-
-            try {
-                values.put(ItemContract.ItemEntry.COLUMN_ITEM_IMG, ItemImageHandler.getBytes(ItemImageHandler.resizeBitmap(mImageNewSelected,250)));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        // If an image is provided by the user, save it. If not, change the mImageNewSelected to the default image
+                if (mImageNewSelected == null) {
+            mImageNewSelected = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_box_empty);
         }
-
+        try {
+            values.put(ItemContract.ItemEntry.COLUMN_ITEM_IMG,
+                        ItemImageHandler.getBytes(ItemImageHandler.resizeBitmap(mImageNewSelected,250)));
+        } catch (IOException e) {
+                e.printStackTrace();
+        }
 
         // Determine if this is a new or existing item by checking if mCurrentItemUri is null or not
         if (mCurrentItemUri == null) {
@@ -405,6 +414,25 @@ public class EditorActivity extends AppCompatActivity implements
             menuItemDelete.setVisible(false);
             MenuItem menuItemEdit = menu.findItem(R.id.action_edit);
             menuItemEdit.setVisible(false);
+        }
+        return true;
+    }
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle(R.string.image_context_title);
+        menu.add(0, v.getId(), 0, R.string.image_context_new);
+        menu.add(0, v.getId(), 0, R.string.image_context_delete);
+    }
+    public boolean onContextItemSelected(MenuItem selectedMenuItem) {
+        switch (selectedMenuItem.getTitle().toString()){
+            case CONTEXT_MENU_NEW:
+                // call as if it was a click
+                mImageView.callOnClick();
+                break;
+            case CONTEXT_MENU_DELETE:
+                deleteImage();
+                break;
         }
         return true;
     }
@@ -761,6 +789,10 @@ public class EditorActivity extends AppCompatActivity implements
 
         // Close the activity
         finish();
+    }
+    private void deleteImage(){
+        mImageView.setImageResource(R.drawable.ic_box_empty);
+        mImageNewSelected = null;
     }
 
     private void goToEditMode() {

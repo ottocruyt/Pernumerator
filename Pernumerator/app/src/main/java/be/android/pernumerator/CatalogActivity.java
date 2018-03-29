@@ -43,9 +43,9 @@ import be.android.pernumerator.data.ItemImageHandler;
 //TODO add type spinner with possibility of adding a new one
 //TODO add barcode field
 //TODO database update handler
-//TODO add header for item fields in editor (not clear which is what)
-//TODO check if this is the correct place for the image handler to be used
 //TODO add possibility to delete image after being added.
+//TODO make clear that image is clickable
+//TODO check if refactoring is needed
 
 /**
  * Displays list of items that were entered and stored in the app.

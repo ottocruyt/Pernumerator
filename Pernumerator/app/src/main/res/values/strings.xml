@@ -44,6 +44,15 @@
     <!-- Label for editor overflow menu option that edits the current item [CHAR LIMIT=20] -->
     <string name="action_edit">Edit</string>
 
+    <!-- Label for image context menu [CHAR LIMIT=20] -->
+    <string name="image_context_title">Image Options</string>
+
+    <!-- image context menu item Select New [CHAR LIMIT=20] -->
+    <string name="image_context_new">Select New</string>
+
+    <!-- image context menu item Select New [CHAR LIMIT=20] -->
+    <string name="image_context_delete">Delete</string>
+
     <!-- Toast message in editor when new item has been successfully inserted [CHAR LIMIT=NONE] -->
     <string name="editor_insert_item_successful">Item saved</string>
 
