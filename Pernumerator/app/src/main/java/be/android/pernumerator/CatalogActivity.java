@@ -46,6 +46,7 @@ import be.android.pernumerator.data.ItemImageHandler;
 //TODO add possibility to delete image after being added.
 //TODO make clear that image is clickable
 //TODO check if refactoring is needed
+//TODO implement search
 
 /**
  * Displays list of items that were entered and stored in the app.

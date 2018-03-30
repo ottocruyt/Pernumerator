@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Context menu for the image -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_image_context_new"
+        android:title="@string/image_context_new" />
+    <item
+        android:id="@+id/action_image_context_delete"
+        android:title="@string/image_context_delete" />
+</menu>

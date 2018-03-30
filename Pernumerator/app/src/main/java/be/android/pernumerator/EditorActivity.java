@@ -32,6 +32,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -73,11 +74,6 @@ public class EditorActivity extends AppCompatActivity implements
 
     private final String LONG_CLICK_LISTENER = "long";
     private final String SHORT_CLICK_LISTENER = "short";
-
-    /** set new or delete image from long click context menu: menu options*/ // not referring to strings.xml!!! not good
-    private final String CONTEXT_MENU_NEW = "Select New";
-    private final String CONTEXT_MENU_DELETE = "Delete";
-
 
     /** Content URI for the existing item (null if it's a new item) */
     private Uri mCurrentItemUri;
@@ -393,6 +389,11 @@ public class EditorActivity extends AppCompatActivity implements
         return exitEditorAfterReturn;
     }
 
+    /**
+     * options menu inflater
+     *
+     */
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu options from the res/menu/menu_editor.xml file.
@@ -417,25 +418,40 @@ public class EditorActivity extends AppCompatActivity implements
         }
         return true;
     }
+    /**
+     * Create the context menu for images
+     */
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.setHeaderTitle(R.string.image_context_title);
-        menu.add(0, v.getId(), 0, R.string.image_context_new);
-        menu.add(0, v.getId(), 0, R.string.image_context_delete);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_context_image, menu);
     }
+
+    /**
+     * Determine what to do when a certain image context menu item is clicked
+     */
+
     public boolean onContextItemSelected(MenuItem selectedMenuItem) {
-        switch (selectedMenuItem.getTitle().toString()){
-            case CONTEXT_MENU_NEW:
+        // if you want to add info, you can get it via AdapterContextMenuInfo
+        //AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) selectedMenuItem.getMenuInfo();
+        switch (selectedMenuItem.getItemId()){
+            case R.id.action_image_context_new:
                 // call as if it was a click
                 mImageView.callOnClick();
-                break;
-            case CONTEXT_MENU_DELETE:
+                return true;
+            case R.id.action_image_context_delete:
                 deleteImage();
-                break;
+                return true;
+            default:
+                return super.onContextItemSelected(selectedMenuItem);
         }
-        return true;
     }
+
+    /**
+     * Determine what to do when a certain options menu item is clicked
+     */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
