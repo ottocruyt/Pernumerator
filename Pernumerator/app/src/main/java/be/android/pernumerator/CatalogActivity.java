@@ -43,8 +43,7 @@ import be.android.pernumerator.data.ItemImageHandler;
 //TODO add type spinner with possibility of adding a new one
 //TODO add barcode field
 //TODO database update handler
-//TODO add possibility to delete image after being added.
-//TODO make clear that image is clickable
+//TODO make clear that image is clickable -> elevation did not work
 //TODO check if refactoring is needed
 //TODO implement search
 

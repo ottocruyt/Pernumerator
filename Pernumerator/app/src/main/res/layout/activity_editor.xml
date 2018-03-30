@@ -222,19 +222,50 @@
             android:layout_weight="2"
             android:orientation="vertical"
             android:paddingLeft="4dp">
-
+            <!--android:paddingLeft="4dp"-->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:paddingLeft="4dp">
-
+                android:layout_weight="2">
                 <!-- image field -->
                 <ImageView
                     android:id="@+id/edit_item_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_box_empty"/>
+            </RelativeLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/container_barcode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <!-- Label -->
+        <TextView
+            style="@style/CategoryStyle"
+            android:text="@string/category_barcode" />
+        <!-- Input fields barcode-->
+        <LinearLayout
+            android:id="@+id/container_barcode_input_fields"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="vertical"
+            android:paddingLeft="4dp">
+            <!--android:paddingLeft="4dp"-->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2">
+                <!-- barcode field -->
+                <Button
+                    android:id="@+id/barcode_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/barcode_button_text"
+                    android:onClick="startBarcodeActivity"/>
             </RelativeLayout>
         </LinearLayout>
 

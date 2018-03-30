@@ -25,4 +25,8 @@
 
     <!-- Primary dark color for the editor -->
     <color name="editorColorPrimaryDark">#00E0FF</color>
+
+    <!-- Primary dark color for the editor -->
+    <color name="lightGray">#808080</color>
+
 </resources>
