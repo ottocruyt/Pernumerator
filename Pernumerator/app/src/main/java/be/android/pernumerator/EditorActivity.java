@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -46,7 +47,10 @@ import pl.aprilapps.easyphotopicker.EasyImage;
  * Allows user to create a new item or edit an existing one.
  */
 public class EditorActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
+
+    private static final int RC_BARCODE_CAPTURE = 9001; // identifier for barcode reader
+    private static final String TAG = "EditorActivity";
 
     /** Identifier for the item data loader */
     private static final int EXISTING_ITEM_LOADER = 0;
@@ -54,6 +58,11 @@ public class EditorActivity extends AppCompatActivity implements
     /** Action type requested for item image selection */
     private final int SELECT_PHOTO = 1; // for gallery picker, used in switch case
     private final int SELECT_GALLERY_CAMERA = 21356; // for gallery or camera picker, using easyImage library
+
+    /** options for barcode reader*/
+    private  boolean autoFocus = true;
+    private boolean useFlash = true;
+    private Button mBarcodeButton;
 
     /** view or edit mode depending on the intent extra*/
 
@@ -169,7 +178,7 @@ public class EditorActivity extends AppCompatActivity implements
         mWidthEditText = (EditText) findViewById(R.id.edit_item_width);
         mHeightEditText = (EditText) findViewById(R.id.edit_item_height);
         mImageView = (ImageView) findViewById(R.id.edit_item_image);
-
+        mBarcodeButton = (Button) findViewById(R.id.barcode_btn);
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
         // or not, if the user tries to leave the editor without saving.
@@ -185,7 +194,7 @@ public class EditorActivity extends AppCompatActivity implements
 
         // Setup OnClickListener for starting image picker
         mImageView.setOnClickListener(mClickListenerImage);
-
+        mBarcodeButton.setOnClickListener(this);
         // Setup ContextMenuListener for imageview
         registerForContextMenu(mImageView);
 
@@ -863,5 +872,17 @@ public class EditorActivity extends AppCompatActivity implements
     public void startBarcodeActivity(View view) {
         Intent Intent = new Intent(getApplicationContext(), BarcodeActivity.class);
         startActivity(Intent);
+    }
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.barcode_btn) {
+            // launch barcode activity.
+            Intent intent = new Intent(this, BarcodeActivity.class);
+            intent.putExtra(BarcodeActivity.AutoFocus,autoFocus);
+            intent.putExtra(BarcodeActivity.UseFlash, useFlash);
+
+            startActivityForResult(intent, RC_BARCODE_CAPTURE);
+        }
+
     }
 }

@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/barcodeTopLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="@dimen/activity_margin"
-    tools:context="be.android.pernumerator.BarcodeActivity"
-    android:id="@+id/edit_layout_parent">
+    android:keepScreenOn="true">
 
-    <SurfaceView
-        android:id="@+id/camera_view"
-        android:layout_width="250dp"
-        android:layout_height="250dp" />
+    <be.android.pernumerator.barcode.CameraSourcePreview
+        android:id="@+id/camera_source_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <be.android.pernumerator.barcode.GraphicOverlay
+            android:id="@+id/graphicOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </be.android.pernumerator.barcode.CameraSourcePreview>
+
     <TextView
         android:id="@+id/barcode_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="test"/>
-p
 </LinearLayout>

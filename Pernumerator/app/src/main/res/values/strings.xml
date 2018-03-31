@@ -165,5 +165,10 @@
     <string name="title_activity_barcode">BarcodeActivity</string>
     <string name="category_barcode">Barcode</string>
     <string name="barcode_button_text">Button Barcode</string>
+    <string name="low_storage_error">Low Storage Error</string>
+    <string name="ok">OK</string>
+    <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
+    <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
+
 
 </resources>

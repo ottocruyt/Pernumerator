@@ -264,8 +264,7 @@
                     android:id="@+id/barcode_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/barcode_button_text"
-                    android:onClick="startBarcodeActivity"/>
+                    android:text="@string/barcode_button_text"/>
             </RelativeLayout>
         </LinearLayout>
 
