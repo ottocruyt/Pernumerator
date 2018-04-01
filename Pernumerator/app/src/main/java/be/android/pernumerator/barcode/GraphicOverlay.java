@@ -143,7 +143,8 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
      */
     public List<T> getGraphics() {
         synchronized (mLock) {
-            return new Vector(mGraphics);
+            return new Vector(mGraphics) {
+            };
         }
     }
 

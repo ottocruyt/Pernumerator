@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -70,7 +69,7 @@ public final class BarcodeActivity extends AppCompatActivity implements BarcodeG
         setContentView(R.layout.activity_barcode);
 
         mPreview = findViewById(R.id.camera_source_preview);
-        mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>) findViewById(R.id.graphicOverlay);
+        mGraphicOverlay = findViewById(R.id.graphicOverlay);
 
         mBarcodeInfo = findViewById(R.id.barcode_textView);
 
@@ -183,11 +182,8 @@ public final class BarcodeActivity extends AppCompatActivity implements BarcodeG
                 .setRequestedPreviewSize(1600, 1024)
                 .setRequestedFps(15.0f);
         // make sure that auto focus is an available option
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            builder = builder.setFocusMode(
+        builder = builder.setFocusMode(
                     autoFocus ? Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE : null);
-        }
-
         mCameraSource = builder
                 .setFlashMode(useFlash ? Camera.Parameters.FLASH_MODE_TORCH : null)
                 .build();

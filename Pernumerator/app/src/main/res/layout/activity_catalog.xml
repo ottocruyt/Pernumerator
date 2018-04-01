@@ -32,7 +32,7 @@
 
         <ImageView
             android:id="@+id/empty_box_image"
-            android:contentDescription="picture shown when no items in database"
+            android:contentDescription="@string/default_image_catalog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"

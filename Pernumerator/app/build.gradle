@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
 
     defaultConfig {
         applicationId "be.android.pernumerator"
         minSdkVersion 16
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
     }
@@ -20,8 +20,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:support-compat:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support:support-compat:27.1.0'
+    implementation 'com.android.support:design:27.1.0'
     implementation 'com.github.jkwiecien:EasyImage:2.0.4'
     implementation 'com.google.android.gms:play-services-vision:12.0.0'
 }

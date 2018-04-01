@@ -61,7 +61,7 @@ public class EditorActivity extends AppCompatActivity implements
 
     /** options for barcode reader*/
     private  boolean autoFocus = true;
-    private boolean useFlash = true;
+    private boolean useFlash = false;
     private Button mBarcodeButton;
 
     /** view or edit mode depending on the intent extra*/
@@ -195,7 +195,7 @@ public class EditorActivity extends AppCompatActivity implements
         // Setup OnClickListener for starting image picker
         mImageView.setOnClickListener(mClickListenerImage);
         mBarcodeButton.setOnClickListener(this);
-        // Setup ContextMenuListener for imageview
+        // Setup ContextMenuListener for imageView
         registerForContextMenu(mImageView);
 
         setupSpinner();

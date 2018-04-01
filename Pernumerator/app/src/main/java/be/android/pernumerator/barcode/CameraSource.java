@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
@@ -13,11 +14,13 @@ import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.support.annotation.StringDef;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.google.android.gms.common.images.Size;
 import com.google.android.gms.vision.Detector;
@@ -319,22 +322,18 @@ public class CameraSource {
      */
     @RequiresPermission(Manifest.permission.CAMERA)
     public CameraSource start() throws IOException {
+        if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(mContext, "First enable CAMERA permission.", Toast.LENGTH_LONG).show();
+            return null; //  TODO: correct return value for camera source start?
+        }
         synchronized (mCameraLock) {
             if (mCamera != null) {
                 return this;
             }
 
             mCamera = createCamera();
-
-            // SurfaceTexture was introduced in Honeycomb (11), so if we are running and
-            // old version of Android. fall back to use SurfaceView.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                mDummySurfaceTexture = new SurfaceTexture(DUMMY_TEXTURE_NAME);
-                mCamera.setPreviewTexture(mDummySurfaceTexture);
-            } else {
-                mDummySurfaceView = new SurfaceView(mContext);
-                mCamera.setPreviewDisplay(mDummySurfaceView.getHolder());
-            }
+            mDummySurfaceTexture = new SurfaceTexture(DUMMY_TEXTURE_NAME);
+            mCamera.setPreviewTexture(mDummySurfaceTexture);
             mCamera.startPreview();
 
             mProcessingThread = new Thread(mFrameProcessor);
@@ -353,6 +352,11 @@ public class CameraSource {
      */
     @RequiresPermission(Manifest.permission.CAMERA)
     public CameraSource start(SurfaceHolder surfaceHolder) throws IOException {
+        if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(mContext, "First enable CAMERA permission.", Toast.LENGTH_LONG).show();
+            return null; //  TODO: correct return value for camera source start?
+        }
+
         synchronized (mCameraLock) {
             if (mCamera != null) {
                 return this;
@@ -404,13 +408,7 @@ public class CameraSource {
                     // wasn't introduced until Honeycomb.  Since the interface cannot use a SurfaceTexture, if the
                     // developer wants to display a preview we must use a SurfaceHolder.  If the developer doesn't
                     // want to display a preview we use a SurfaceTexture if we are running at least Honeycomb.
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                        mCamera.setPreviewTexture(null);
-
-                    } else {
-                        mCamera.setPreviewDisplay(null);
-                    }
+                    mCamera.setPreviewTexture(null);
                 } catch (Exception e) {
                     Log.e(TAG, "Failed to clear camera preview: " + e);
                 }
@@ -619,31 +617,6 @@ public class CameraSource {
         }
     }
 
-    /**
-     * Sets camera auto-focus move callback.
-     *
-     * @param cb the callback to run
-     * @return {@code true} if the operation is supported (i.e. from Jelly Bean), {@code false} otherwise
-     */
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    public boolean setAutoFocusMoveCallback(@Nullable AutoFocusMoveCallback cb) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            return false;
-        }
-
-        synchronized (mCameraLock) {
-            if (mCamera != null) {
-                CameraAutoFocusMoveCallback autoFocusMoveCallback = null;
-                if (cb != null) {
-                    autoFocusMoveCallback = new CameraAutoFocusMoveCallback();
-                    autoFocusMoveCallback.mDelegate = cb;
-                }
-                mCamera.setAutoFocusMoveCallback(autoFocusMoveCallback);
-            }
-        }
-
-        return true;
-    }
 
     //==============================================================================================
     // Private

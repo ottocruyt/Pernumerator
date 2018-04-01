@@ -46,6 +46,7 @@ import be.android.pernumerator.data.ItemImageHandler;
 //TODO make clear that image is clickable -> elevation did not work
 //TODO check if refactoring is needed
 //TODO implement search
+//TODO add preferences (via preferences API) to get use flash or not
 
 /**
  * Displays list of items that were entered and stored in the app.

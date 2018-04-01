@@ -35,11 +35,11 @@ public class BarcodeGraphic extends GraphicOverlay.Graphic {
         mRectPaint = new Paint();
         mRectPaint.setColor(selectedColor);
         mRectPaint.setStyle(Paint.Style.STROKE);
-        mRectPaint.setStrokeWidth(4.0f);
+        mRectPaint.setStrokeWidth(10.0f);
 
         mTextPaint = new Paint();
         mTextPaint.setColor(selectedColor);
-        mTextPaint.setTextSize(36.0f);
+        mTextPaint.setTextSize(70.0f);
     }
 
     public int getId() {
