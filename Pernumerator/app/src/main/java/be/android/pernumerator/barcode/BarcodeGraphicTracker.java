@@ -1,8 +1,9 @@
-package be.android.pernumerator;
+package be.android.pernumerator.barcode;
 
 import android.content.Context;
 import android.support.annotation.UiThread;
 
+import be.android.pernumerator.barcode.BarcodeGraphic;
 import be.android.pernumerator.barcode.GraphicOverlay;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Tracker;

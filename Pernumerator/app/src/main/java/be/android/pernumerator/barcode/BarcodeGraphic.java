@@ -1,11 +1,9 @@
-package be.android.pernumerator;
+package be.android.pernumerator.barcode;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-
-import be.android.pernumerator.barcode.GraphicOverlay;
 import com.google.android.gms.vision.barcode.Barcode;
 
 /**

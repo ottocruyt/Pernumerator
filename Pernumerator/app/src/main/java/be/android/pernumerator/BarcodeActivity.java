@@ -33,9 +33,12 @@ import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import java.io.IOException;
+
+import be.android.pernumerator.barcode.BarcodeGraphicTracker;
+import be.android.pernumerator.barcode.BarcodeTrackerFactory;
 import be.android.pernumerator.barcode.CameraSourcePreview;
 import be.android.pernumerator.barcode.GraphicOverlay;
-import be.android.pernumerator.BarcodeGraphic;
+import be.android.pernumerator.barcode.BarcodeGraphic;
 import be.android.pernumerator.barcode.CameraSource;
 
 
