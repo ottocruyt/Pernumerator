@@ -366,6 +366,7 @@ public class CameraSource {
             mCamera.setPreviewDisplay(surfaceHolder);
             mCamera.startPreview();
 
+
             mProcessingThread = new Thread(mFrameProcessor);
             mFrameProcessor.setActive(true);
             mProcessingThread.start();
@@ -416,6 +417,10 @@ public class CameraSource {
                 mCamera = null;
             }
         }
+    }
+
+    public void freeze() {
+        mCamera.stopPreview();
     }
 
     /**

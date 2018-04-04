@@ -24,11 +24,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.vision.barcode.Barcode;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -62,7 +65,7 @@ public class EditorActivity extends AppCompatActivity implements
     /** options for barcode reader*/
     private  boolean autoFocus = true;
     private boolean useFlash = false;
-    private Button mBarcodeButton;
+    private ImageButton mBarcodeButton;
 
     /** view or edit mode depending on the intent extra*/
 
@@ -82,6 +85,8 @@ public class EditorActivity extends AppCompatActivity implements
 
     /** EditText field to enter the item's weight */
     private EditText mWeightEditText;
+
+    private EditText mBarcodeEditText;
 
     /** ImageView field */
     private ImageView mImageView;
@@ -178,7 +183,8 @@ public class EditorActivity extends AppCompatActivity implements
         mWidthEditText = (EditText) findViewById(R.id.edit_item_width);
         mHeightEditText = (EditText) findViewById(R.id.edit_item_height);
         mImageView = (ImageView) findViewById(R.id.edit_item_image);
-        mBarcodeButton = (Button) findViewById(R.id.barcode_btn);
+        mBarcodeButton = (ImageButton) findViewById(R.id.barcode_btn);
+        mBarcodeEditText = (EditText) findViewById(R.id.edit_item_barcode);
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
         // or not, if the user tries to leave the editor without saving.
@@ -189,6 +195,7 @@ public class EditorActivity extends AppCompatActivity implements
         mLengthEditText.setOnTouchListener(mTouchListener);
         mWidthEditText.setOnTouchListener(mTouchListener);
         mHeightEditText.setOnTouchListener(mTouchListener);
+        mBarcodeEditText.setOnTouchListener(mTouchListener);
         mOwnerSpinner.setOnTouchListener(mTouchListener);
         mImageView.setOnTouchListener(mTouchListener);
 
@@ -258,6 +265,7 @@ public class EditorActivity extends AppCompatActivity implements
         String lengthString = mLengthEditText.getText().toString().trim();
         String widthString = mWidthEditText.getText().toString().trim();
         String heightString = mHeightEditText.getText().toString().trim();
+        String barcodeString = mBarcodeEditText.getText().toString().trim();
 
         //If there was a new image selected mImageNewSelected will be notNull
 
@@ -269,7 +277,8 @@ public class EditorActivity extends AppCompatActivity implements
                 TextUtils.isEmpty(nameString) && TextUtils.isEmpty(typeString) &&
                 TextUtils.isEmpty(weightString) && mOwner == ItemContract.ItemEntry.OWNER_BOTH &&
                 TextUtils.isEmpty(priceString) && TextUtils.isEmpty(lengthString) &&
-                TextUtils.isEmpty(widthString) && TextUtils.isEmpty(heightString) && mImageNewSelected == null) {
+                TextUtils.isEmpty(widthString) && TextUtils.isEmpty(heightString) && mImageNewSelected == null
+                && TextUtils.isEmpty(barcodeString)) {
             // Since no fields were modified, we can return early without creating a new item.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             // -> even if you press V, if nothing is changed it will just not save it and go to main
@@ -653,23 +662,24 @@ public class EditorActivity extends AppCompatActivity implements
         mHeightEditText.setText("");
         mImageView.setImageResource(R.drawable.ic_box_empty); // Select default empty box
         mOwnerSpinner.setSelection(0); // Select "Unknown" gender
+        mBarcodeEditText.setText("");
     }
 
     /**
      * handle the result of a photo selection
      * @param requestCode SELECT_PHOTO or SELECT_GALLERY_CAMERA
      * @param resultCode RESULT_OK
-     * @param imageReturnedIntent the returned intent with the selected image inside
+     * @param intent the returned intent with the selected image inside
      */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
-        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
 
         switch(requestCode) {
             case SELECT_PHOTO:
                 if(resultCode == RESULT_OK){
                     try {
-                        final Uri imageUri = imageReturnedIntent.getData();
+                        final Uri imageUri = intent.getData();
                         final InputStream imageStream = getContentResolver().openInputStream(imageUri);
                         final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                         mImageView.setImageBitmap(selectedImage);
@@ -682,7 +692,7 @@ public class EditorActivity extends AppCompatActivity implements
                 break;
             case SELECT_GALLERY_CAMERA:
                 if(resultCode == RESULT_OK){
-                    EasyImage.handleActivityResult(requestCode, resultCode, imageReturnedIntent, this, new DefaultCallback() {
+                    EasyImage.handleActivityResult(requestCode, resultCode, intent, this, new DefaultCallback() {
                         @Override
                         public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
                             //Some error handling
@@ -711,7 +721,11 @@ public class EditorActivity extends AppCompatActivity implements
                     });
                 }
                 break;
-
+            case RC_BARCODE_CAPTURE:
+                if(resultCode == RESULT_OK) {
+                    String barcodeResult = intent.getStringExtra("Barcode");
+                    mBarcodeEditText.setText(barcodeResult);
+                }
         }
     }
 
@@ -869,10 +883,7 @@ public class EditorActivity extends AppCompatActivity implements
         EasyImage.clearConfiguration(this);
         super.onDestroy();
     }
-    public void startBarcodeActivity(View view) {
-        Intent Intent = new Intent(getApplicationContext(), BarcodeActivity.class);
-        startActivity(Intent);
-    }
+
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.barcode_btn) {
@@ -880,7 +891,6 @@ public class EditorActivity extends AppCompatActivity implements
             Intent intent = new Intent(this, BarcodeActivity.class);
             intent.putExtra(BarcodeActivity.AutoFocus,autoFocus);
             intent.putExtra(BarcodeActivity.UseFlash, useFlash);
-
             startActivityForResult(intent, RC_BARCODE_CAPTURE);
         }
 

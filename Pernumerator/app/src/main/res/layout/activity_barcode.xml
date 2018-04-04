@@ -5,12 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:keepScreenOn="true">
+    android:keepScreenOn="true"
+    android:background="@color/snackbarDefaultColor">
 
     <be.android.pernumerator.barcode.CameraSourcePreview
         android:id="@+id/camera_source_preview"
+        android:layout_alignParentTop="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="fill_parent"
+        android:layout_weight = "1">
 
         <be.android.pernumerator.barcode.GraphicOverlay
             android:id="@+id/graphicOverlay"
@@ -23,5 +26,17 @@
         android:id="@+id/barcode_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="test"/>
+        android:layout_weight = "0"
+        android:textSize="25sp"
+        android:text="@string/barcode_detection_result"
+        android:textColor="@android:color/white"
+        />
+    <!--TextView
+        android:id="@+id/barcode_textView_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight = "0"
+        android:textSize="25sp"
+        android:text="@string/barcode_detection_type"
+        /-->
 </LinearLayout>

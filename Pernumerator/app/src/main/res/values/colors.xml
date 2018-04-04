@@ -25,6 +25,7 @@
 
     <!-- Primary dark color for the editor -->
     <color name="editorColorPrimaryDark">#00E0FF</color>
+    <color name="snackbarDefaultColor">#080808</color>
 
 
 </resources>

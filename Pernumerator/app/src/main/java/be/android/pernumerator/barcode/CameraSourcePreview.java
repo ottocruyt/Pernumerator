@@ -24,6 +24,7 @@ public class CameraSourcePreview extends ViewGroup {
     private boolean mSurfaceAvailable;
     private CameraSource mCameraSource;
 
+
     private GraphicOverlay mOverlay;
 
     public CameraSourcePreview(Context context, AttributeSet attrs) {
@@ -116,10 +117,10 @@ public class CameraSourcePreview extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        int width = 320;
-        int height = 240;
+        int width = 1971;//hardcoded TODO: remove hardcode width height of preview size
+        int height = 1080;
         if (mCameraSource != null) {
-            Size size = mCameraSource.getPreviewSize();
+            Size size = mCameraSource.getPreviewSize(); //TODO: check, for some reason getPreviewSize is null
             if (size != null) {
                 width = size.getWidth();
                 height = size.getHeight();
@@ -148,7 +149,7 @@ public class CameraSourcePreview extends ViewGroup {
         }
 
         for (int i = 0; i < getChildCount(); ++i) {
-            getChildAt(i).layout(0, 0, childWidth, childHeight);
+            getChildAt(i).layout(0, 0, width, height); //orig childWidth, childHeight
         }
 
         try {

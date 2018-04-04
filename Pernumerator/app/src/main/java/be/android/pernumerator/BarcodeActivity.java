@@ -10,17 +10,22 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.support.annotation.NonNull;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +37,7 @@ import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import java.io.IOException;
+import java.util.Hashtable;
 
 import be.android.pernumerator.barcode.BarcodeGraphicTracker;
 import be.android.pernumerator.barcode.BarcodeTrackerFactory;
@@ -47,7 +53,10 @@ public final class BarcodeActivity extends AppCompatActivity implements BarcodeG
     private static final String TAG = "Barcode-reader";
 
     //private SurfaceView mCameraView = null;
-    private TextView mBarcodeInfo = null;
+    private TextView mBarcodeInfo;
+    private TextView mBarcodeTypeText;
+    private String mBarcodeValue;
+
     private static final int RC_HANDLE_CAMERA_PERM = 2;
 
     // constants used to pass extra data in the intent
@@ -62,6 +71,9 @@ public final class BarcodeActivity extends AppCompatActivity implements BarcodeG
     // helper objects for detecting taps and pinches.
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
+    private Hashtable<Integer, String> mBarcodeFormats = new Hashtable<Integer, String>();
+    private Snackbar snack;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +85,10 @@ public final class BarcodeActivity extends AppCompatActivity implements BarcodeG
 
         mBarcodeInfo = findViewById(R.id.barcode_textView);
 
+        //mBarcodeTypeText = findViewById(R.id.barcode_textView_type);
+
         boolean autoFocus = getIntent().getBooleanExtra(AutoFocus, true);
-        boolean useFlash = getIntent().getBooleanExtra(UseFlash, true);
+        boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
 
 
         // Check for the camera permission before accessing the camera.  If the
@@ -89,9 +103,14 @@ public final class BarcodeActivity extends AppCompatActivity implements BarcodeG
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
-        Snackbar.make(mGraphicOverlay, "Tap to capture. Pinch/Stretch to zoom",
-                Snackbar.LENGTH_LONG)
-                .show();
+        declareBarcodeFormatsHashtable();
+
+        snack = Snackbar.make(mGraphicOverlay, "Pinch to zoom", Snackbar.LENGTH_INDEFINITE);
+        View view = snack.getView();
+        FrameLayout.LayoutParams params =(FrameLayout.LayoutParams)view.getLayoutParams();
+        params.gravity = Gravity.TOP;
+        view.setLayoutParams(params);
+        snack.show();
 
     }
 
@@ -129,6 +148,35 @@ public final class BarcodeActivity extends AppCompatActivity implements BarcodeG
         boolean c = gestureDetector.onTouchEvent(e);
 
         return b || c || super.onTouchEvent(e);
+    }
+
+    private void declareBarcodeFormatsHashtable(){
+        mBarcodeFormats.put(0,"All Formats");
+        mBarcodeFormats.put(1,"CODE 128");
+        mBarcodeFormats.put(2,"CODE_39");
+        mBarcodeFormats.put(4,"CODE_93");
+        mBarcodeFormats.put(8,"CODABAR");
+        mBarcodeFormats.put(16,"DATA_MATRIX");
+        mBarcodeFormats.put(32,"EAN_13");
+        mBarcodeFormats.put(64,"EAN_8");
+        mBarcodeFormats.put(128,"ITF");
+        mBarcodeFormats.put(256,"QR_CODE");
+        mBarcodeFormats.put(512,"UPC_A");
+        mBarcodeFormats.put(1024,"UPC_E");
+        mBarcodeFormats.put(2048,"PDF417");
+        mBarcodeFormats.put(4096,"AZTEC");
+        mBarcodeFormats.put(1,"CONTACT");
+        mBarcodeFormats.put(2,"EMAIL");
+        mBarcodeFormats.put(3,"ISBN");
+        mBarcodeFormats.put(4,"PHONE");
+        mBarcodeFormats.put(5,"PRODUCT");
+        mBarcodeFormats.put(6,"SMS");
+        mBarcodeFormats.put(7,"TEXT");
+        mBarcodeFormats.put(8,"URL");
+        mBarcodeFormats.put(9,"WIFI");
+        mBarcodeFormats.put(10,"GEO");
+        mBarcodeFormats.put(11,"CALENDAR_EVENT");
+        mBarcodeFormats.put(12,"DRIVER_LICENSE");
     }
     /**
      * Creates and starts the camera.  Note that this uses a higher resolution in comparison
@@ -177,9 +225,12 @@ public final class BarcodeActivity extends AppCompatActivity implements BarcodeG
         // Creates and starts the camera.  Note that this uses a higher resolution in comparison
         // to other detection examples to enable the barcode detector to detect small barcodes
         // at long distances.
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        Log.e(TAG, "widthPixels: " + metrics.widthPixels + " -- metrics: " + metrics.heightPixels);
         CameraSource.Builder builder = new CameraSource.Builder(getApplicationContext(), barcodeDetector)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
-                .setRequestedPreviewSize(1600, 1024)
+                .setRequestedPreviewSize(metrics.heightPixels, metrics.widthPixels) //default = w 1600 h 1024
                 .setRequestedFps(15.0f);
         // make sure that auto focus is an available option
         builder = builder.setFocusMode(
@@ -232,7 +283,7 @@ public final class BarcodeActivity extends AppCompatActivity implements BarcodeG
         if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Camera permission granted - initialize the camera source");
             // we have permission, so create the camerasource
-            boolean autoFocus = getIntent().getBooleanExtra(AutoFocus,false);
+            boolean autoFocus = getIntent().getBooleanExtra(AutoFocus,true);
             boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
             createCameraSource(autoFocus, useFlash);
             return;
@@ -303,10 +354,20 @@ public final class BarcodeActivity extends AppCompatActivity implements BarcodeG
 
         if (best != null) {
             Intent data = new Intent();
-            data.putExtra(BarcodeObject, best);
-            setResult(CommonStatusCodes.SUCCESS, data);
+            data.putExtra(BarcodeObject, best.displayValue);
+            setResult(RESULT_OK, data);
             finish();
             return true;
+        } else if (mBarcodeValue != null) {
+            Intent data = new Intent();
+            data.putExtra(BarcodeObject, mBarcodeValue);
+            setResult(RESULT_OK, data);
+            finish();
+            return true;
+        } else {
+            Intent data = new Intent();
+            setResult(RESULT_CANCELED, data);
+            finish();
         }
         return false;
     }
@@ -371,9 +432,28 @@ public final class BarcodeActivity extends AppCompatActivity implements BarcodeG
             mCameraSource.doZoom(detector.getScaleFactor());
         }
     }
+
     @Override
     public void onBarcodeDetected(Barcode barcode) {
-        //do something with barcode data returned
+
+        /* //displaying barcode format
+        String detectedType = mBarcodeFormats.get(barcode.format);
+        String detectedTypeText = getResources().getString(R.string.barcode_detection_type) + detectedType;
+        mBarcodeTypeText.setText(detectedTypeText);
+        */
+        mCameraSource.freeze(); // freeze the frame on the scanned barcode
+        mBarcodeValue = barcode.displayValue;
+        String detectedBarcode = barcode.displayValue;
+        String detectedBarcodeText = getResources().getString(R.string.barcode_detection_result) + "  " + detectedBarcode;
+        mBarcodeInfo.setText(detectedBarcodeText);
+        //snack.dismiss(); // dismiss the snackbar for zooming instructions
+        snack = Snackbar.make(mGraphicOverlay, "Tap to accept", Snackbar.LENGTH_INDEFINITE);
+        View view = snack.getView();
+        FrameLayout.LayoutParams params =(FrameLayout.LayoutParams)view.getLayoutParams();
+        params.gravity = Gravity.TOP;
+        view.setLayoutParams(params);
+        snack.show();
+
     }
 
 

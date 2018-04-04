@@ -58,6 +58,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".BarcodeActivity"/>
+            android:name=".BarcodeActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
     </application>
 </manifest>

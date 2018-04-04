@@ -253,20 +253,23 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:paddingLeft="4dp">
-            <!--android:paddingLeft="4dp"-->
-            <RelativeLayout
+            <!-- barcode field -->
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2">
-                <!-- barcode field -->
-                <Button
-                    android:id="@+id/barcode_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/barcode_button_text"/>
-            </RelativeLayout>
+                android:id="@+id/edit_item_barcode"
+                style="@style/EditorFieldStyle"
+                android:hint="@string/hint_item_barcode"
+                android:inputType="number"
+                android:layout_weight="1"/>
+            <ImageButton
+                android:id="@+id/barcode_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_photo_camera_black_24dp"
+                android:layout_weight="0"/>
         </LinearLayout>
 
     </LinearLayout>
