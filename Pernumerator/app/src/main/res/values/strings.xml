@@ -107,7 +107,7 @@
     <string name="category_measurement">Measurements</string>
 
     <!-- Label for image in the editor [CHAR LIMIT=30] -->
-    <string name="category_image">Image</string>
+    <string name="category_image"><![CDATA[Image\n(long tap to edit)]]></string>
 
     <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
     <string name="hint_item_name">Name</string>
