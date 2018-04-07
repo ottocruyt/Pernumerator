@@ -59,7 +59,9 @@ public class ItemDbHelper extends SQLiteOpenHelper {
                 + ItemContract.ItemEntry.COLUMN_ITEM_DIM_L + " FLOAT NOT NULL DEFAULT 0, "
                 + ItemContract.ItemEntry.COLUMN_ITEM_DIM_W + " FLOAT NOT NULL DEFAULT 0, "
                 + ItemContract.ItemEntry.COLUMN_ITEM_DIM_H + " FLOAT NOT NULL DEFAULT 0, "
-                + ItemContract.ItemEntry.COLUMN_ITEM_IMG + " BLOB);";
+                + ItemContract.ItemEntry.COLUMN_ITEM_IMG + " BLOB, "
+                + ItemContract.ItemEntry.COLUMN_ITEM_BARCODE + " TEXT);";
+
 
         // Execute the SQL statement
         db.execSQL(SQL_CREATE_ITEMS_TABLE);

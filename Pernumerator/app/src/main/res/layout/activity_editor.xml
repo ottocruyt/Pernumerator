@@ -9,268 +9,276 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 --><!-- Layout for the editor -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="@dimen/activity_margin"
-    tools:context="be.android.pernumerator.EditorActivity"
-    android:id="@+id/edit_layout_parent">
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 
-    <!-- Overview category -->
-    <LinearLayout
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="@dimen/activity_margin"
+        tools:context="be.android.pernumerator.EditorActivity"
+        android:id="@+id/edit_layout_parent">
 
-        <!-- Label -->
-        <TextView
-            style="@style/CategoryStyle"
-            android:text="@string/category_overview" />
-
-        <!-- Input fields -->
+        <!-- Overview category -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:orientation="vertical"
-            android:paddingLeft="4dp">
+            android:orientation="horizontal">
 
-            <!-- Name field -->
-            <EditText
-                android:id="@+id/edit_item_name"
-                style="@style/EditorFieldStyle"
-                android:hint="@string/hint_item_name"
-                android:inputType="textCapWords" />
+            <!-- Label -->
+            <TextView
+                style="@style/CategoryStyle"
+                android:text="@string/category_overview" />
 
-            <!-- Type field -->
-            <EditText
-                android:id="@+id/edit_item_type"
-                style="@style/EditorFieldStyle"
-                android:hint="@string/hint_item_type"
-                android:inputType="textCapWords" />
+            <!-- Input fields -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:orientation="vertical"
+                android:paddingLeft="4dp">
+
+                <!-- Name field -->
+                <EditText
+                    android:id="@+id/edit_item_name"
+                    style="@style/EditorFieldStyle"
+                    android:hint="@string/hint_item_name"
+                    android:inputType="textCapWords" />
+
+                <!-- Type field -->
+                <EditText
+                    android:id="@+id/edit_item_type"
+                    style="@style/EditorFieldStyle"
+                    android:hint="@string/hint_item_type"
+                    android:inputType="textCapWords" />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
 
-    <!-- Owner category -->
-    <LinearLayout
-        android:id="@+id/container_owner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <!-- Label -->
-        <TextView
-            style="@style/CategoryStyle"
-            android:text="@string/category_owner" />
-
-        <!-- Input field -->
+        <!-- Owner category -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:id="@+id/container_owner"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
-            <!-- Owner drop-down spinner -->
-            <Spinner
-                android:id="@+id/spinner_owner"
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:paddingRight="16dp"
-                android:spinnerMode="dropdown" />
+            <!-- Label -->
+            <TextView
+                style="@style/CategoryStyle"
+                android:text="@string/category_owner" />
+
+            <!-- Input field -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:orientation="vertical">
+
+                <!-- Owner drop-down spinner -->
+                <Spinner
+                    android:id="@+id/spinner_owner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:paddingRight="16dp"
+                    android:spinnerMode="dropdown" />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
 
-    <!-- Measurement category -->
-    <LinearLayout
-        android:id="@+id/container_measurement"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <!-- Label -->
-        <TextView
-            style="@style/CategoryStyle"
-            android:text="@string/category_measurement" />
-
-        <!-- Input fields weight-->
+        <!-- Measurement category -->
         <LinearLayout
-            android:id="@+id/container_measurement_input_fields"
-            android:layout_width="0dp"
+            android:id="@+id/container_measurement"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:orientation="vertical"
-            android:paddingLeft="4dp">
+            android:orientation="horizontal">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
+            <!-- Label -->
+            <TextView
+                style="@style/CategoryStyle"
+                android:text="@string/category_measurement" />
+
+            <!-- Input fields weight-->
+            <LinearLayout
+                android:id="@+id/container_measurement_input_fields"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
+                android:orientation="vertical"
                 android:paddingLeft="4dp">
 
-                <!-- Weight field -->
-                <EditText
-                    android:id="@+id/edit_item_weight"
-                    style="@style/EditorFieldStyle"
-                    android:hint="@string/hint_item_weight"
-                    android:inputType="numberDecimal" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:paddingLeft="4dp">
 
-                <!-- Units for weight (kg) -->
-                <TextView
-                    android:id="@+id/label_weight_units"
-                    style="@style/EditorUnitsStyle"
-                    android:text="@string/unit_item_weight" />
-            </RelativeLayout>
+                    <!-- Weight field -->
+                    <EditText
+                        android:id="@+id/edit_item_weight"
+                        style="@style/EditorFieldStyle"
+                        android:hint="@string/hint_item_weight"
+                        android:inputType="numberDecimal" />
 
-            <!-- Input fields price -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:paddingLeft="4dp">
+                    <!-- Units for weight (kg) -->
+                    <TextView
+                        android:id="@+id/label_weight_units"
+                        style="@style/EditorUnitsStyle"
+                        android:text="@string/unit_item_weight" />
+                </RelativeLayout>
 
-                <!-- Price field -->
-                <EditText
-                    android:id="@+id/edit_item_price"
-                    style="@style/EditorFieldStyle"
-                    android:hint="@string/hint_item_price"
-                    android:inputType="numberDecimal" />
+                <!-- Input fields price -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:paddingLeft="4dp">
 
-                <!-- Units for price (EUR) -->
-                <TextView
-                    android:id="@+id/label_price_units"
-                    style="@style/EditorUnitsStyle"
-                    android:text="@string/unit_item_price" />
-            </RelativeLayout>
-            <!-- Input fields Length -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:paddingLeft="4dp">
+                    <!-- Price field -->
+                    <EditText
+                        android:id="@+id/edit_item_price"
+                        style="@style/EditorFieldStyle"
+                        android:hint="@string/hint_item_price"
+                        android:inputType="numberDecimal" />
 
-                <!-- Length field -->
-                <EditText
-                    android:id="@+id/edit_item_length"
-                    style="@style/EditorFieldStyle"
-                    android:hint="@string/hint_item_length"
-                    android:inputType="numberDecimal" />
+                    <!-- Units for price (EUR) -->
+                    <TextView
+                        android:id="@+id/label_price_units"
+                        style="@style/EditorUnitsStyle"
+                        android:text="@string/unit_item_price" />
+                </RelativeLayout>
+                <!-- Input fields Length -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:paddingLeft="4dp">
 
-                <!-- Units for length (m) -->
-                <TextView
-                    android:id="@+id/label_dim_units_l"
-                    style="@style/EditorUnitsStyle"
-                    android:text="@string/unit_item_dim_L" />
-            </RelativeLayout>
-            <!-- Input fields Width -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:paddingLeft="4dp">
+                    <!-- Length field -->
+                    <EditText
+                        android:id="@+id/edit_item_length"
+                        style="@style/EditorFieldStyle"
+                        android:hint="@string/hint_item_length"
+                        android:inputType="numberDecimal" />
 
-                <!-- Width field -->
-                <EditText
-                    android:id="@+id/edit_item_width"
-                    style="@style/EditorFieldStyle"
-                    android:hint="@string/hint_item_width"
-                    android:inputType="numberDecimal" />
+                    <!-- Units for length (m) -->
+                    <TextView
+                        android:id="@+id/label_dim_units_l"
+                        style="@style/EditorUnitsStyle"
+                        android:text="@string/unit_item_dim_L" />
+                </RelativeLayout>
+                <!-- Input fields Width -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:paddingLeft="4dp">
 
-                <!-- Units for width (m) -->
-                <TextView
-                    android:id="@+id/label_dim_units_w"
-                    style="@style/EditorUnitsStyle"
-                    android:text="@string/unit_item_dim_W" />
-            </RelativeLayout>
-            <!-- Input fields Height -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:paddingLeft="4dp">
+                    <!-- Width field -->
+                    <EditText
+                        android:id="@+id/edit_item_width"
+                        style="@style/EditorFieldStyle"
+                        android:hint="@string/hint_item_width"
+                        android:inputType="numberDecimal" />
 
-                <!-- Height field -->
-                <EditText
-                    android:id="@+id/edit_item_height"
-                    style="@style/EditorFieldStyle"
-                    android:hint="@string/hint_item_height"
-                    android:inputType="numberDecimal" />
+                    <!-- Units for width (m) -->
+                    <TextView
+                        android:id="@+id/label_dim_units_w"
+                        style="@style/EditorUnitsStyle"
+                        android:text="@string/unit_item_dim_W" />
+                </RelativeLayout>
+                <!-- Input fields Height -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:paddingLeft="4dp">
 
-                <!-- Units for height (m) -->
-                <TextView
-                    android:id="@+id/label_dim_units_h"
-                    style="@style/EditorUnitsStyle"
-                    android:text="@string/unit_item_dim_H" />
-            </RelativeLayout>
+                    <!-- Height field -->
+                    <EditText
+                        android:id="@+id/edit_item_height"
+                        style="@style/EditorFieldStyle"
+                        android:hint="@string/hint_item_height"
+                        android:inputType="numberDecimal" />
+
+                    <!-- Units for height (m) -->
+                    <TextView
+                        android:id="@+id/label_dim_units_h"
+                        style="@style/EditorUnitsStyle"
+                        android:text="@string/unit_item_dim_H" />
+                </RelativeLayout>
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/container_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <!-- Label -->
-        <TextView
-            style="@style/CategoryStyle"
-            android:text="@string/category_image" />
-        <!-- Input fields image-->
         <LinearLayout
-            android:id="@+id/container_image_input_fields"
-            android:layout_width="0dp"
+            android:id="@+id/container_image"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:orientation="vertical"
-            android:paddingLeft="4dp">
-            <!--android:paddingLeft="4dp"-->
-            <RelativeLayout
-                android:layout_width="match_parent"
+            android:orientation="horizontal">
+            <!-- Label -->
+            <TextView
+                android:id="@+id/category_image_text"
+                style="@style/CategoryStyle"
+                android:text="@string/category_image" />
+            <!-- Input fields image-->
+            <LinearLayout
+                android:id="@+id/container_image_input_fields"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2">
-                <!-- image field -->
-                <ImageView
-                    android:id="@+id/edit_item_image"
-                    android:contentDescription="@string/image_context_title"
+                android:layout_weight="2"
+                android:orientation="vertical"
+                android:paddingLeft="4dp">
+                <!--android:paddingLeft="4dp"-->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2">
+                    <!-- image field -->
+                    <ImageView
+                        android:id="@+id/edit_item_image"
+                        android:contentDescription="@string/image_context_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_box_empty"/>
+                </RelativeLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/container_barcode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <!-- Label -->
+            <TextView
+                style="@style/CategoryStyle"
+                android:text="@string/category_barcode" />
+            <!-- Input fields barcode-->
+            <LinearLayout
+                android:id="@+id/container_barcode_input_fields"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:orientation="horizontal"
+                android:paddingLeft="4dp">
+                <!-- barcode field -->
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/edit_item_barcode"
+                    style="@style/EditorFieldStyle"
+                    android:hint="@string/hint_item_barcode"
+                    android:inputType="number"
+                    android:layout_weight="1"/>
+                <ImageButton
+                    android:id="@+id/barcode_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_box_empty"/>
-            </RelativeLayout>
-        </LinearLayout>
+                    android:src="@drawable/ic_photo_camera_black_24dp"
+                    android:layout_weight="0"/>
+            </LinearLayout>
 
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/container_barcode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <!-- Label -->
-        <TextView
-            style="@style/CategoryStyle"
-            android:text="@string/category_barcode" />
-        <!-- Input fields barcode-->
-        <LinearLayout
-            android:id="@+id/container_barcode_input_fields"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:orientation="horizontal"
-            android:paddingLeft="4dp">
-            <!-- barcode field -->
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/edit_item_barcode"
-                style="@style/EditorFieldStyle"
-                android:hint="@string/hint_item_barcode"
-                android:inputType="number"
-                android:layout_weight="1"/>
-            <ImageButton
-                android:id="@+id/barcode_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_photo_camera_black_24dp"
-                android:layout_weight="0"/>
         </LinearLayout>
-
     </LinearLayout>
-</LinearLayout>
+    <!-- Here you put the rest of your current view-->
+</ScrollView>

@@ -28,6 +28,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.CommonStatusCodes;
@@ -66,6 +67,7 @@ public class EditorActivity extends AppCompatActivity implements
     private  boolean autoFocus = true;
     private boolean useFlash = false;
     private ImageButton mBarcodeButton;
+    private TextView image_header;
 
     /** view or edit mode depending on the intent extra*/
 
@@ -172,7 +174,7 @@ public class EditorActivity extends AppCompatActivity implements
             // and display the current values in the editor
             getLoaderManager().initLoader(EXISTING_ITEM_LOADER, null, this);
         }
-
+        image_header = findViewById(R.id.category_image_text);
         // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById(R.id.edit_item_name);
         mTypeEditText = (EditText) findViewById(R.id.edit_item_type);
@@ -352,6 +354,11 @@ public class EditorActivity extends AppCompatActivity implements
         } catch (IOException e) {
                 e.printStackTrace();
         }
+
+        if (barcodeString == null) {
+            barcodeString = "";
+        }
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_BARCODE, barcodeString);
 
         // Determine if this is a new or existing item by checking if mCurrentItemUri is null or not
         if (mCurrentItemUri == null) {
@@ -546,7 +553,8 @@ public class EditorActivity extends AppCompatActivity implements
                 ItemContract.ItemEntry.COLUMN_ITEM_DIM_L,
                 ItemContract.ItemEntry.COLUMN_ITEM_DIM_W,
                 ItemContract.ItemEntry.COLUMN_ITEM_DIM_H,
-                ItemContract.ItemEntry.COLUMN_ITEM_IMG};
+                ItemContract.ItemEntry.COLUMN_ITEM_IMG,
+                ItemContract.ItemEntry.COLUMN_ITEM_BARCODE};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
@@ -577,6 +585,7 @@ public class EditorActivity extends AppCompatActivity implements
             int widthColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_DIM_W);
             int heightColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_DIM_H);
             int imageColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_IMG);
+            int barcodeColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_BARCODE);
 
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
@@ -588,6 +597,7 @@ public class EditorActivity extends AppCompatActivity implements
             float width = cursor.getFloat(widthColumnIndex);
             float height = cursor.getFloat(heightColumnIndex);
             byte[] image = cursor.getBlob(imageColumnIndex);
+            String barcode = cursor.getString(barcodeColumnIndex);
 
             // Update the views on the screen with the values from the database
 
@@ -608,6 +618,7 @@ public class EditorActivity extends AppCompatActivity implements
             mLengthEditText.setText(formattedLength);
             mWidthEditText.setText(formattedWidth);
             mHeightEditText.setText(formattedHeight);
+            mBarcodeEditText.setText(barcode);
             //set the image
             if (image!=null){
                 mImageView.setImageBitmap(ItemImageHandler.getImage(image));
@@ -825,6 +836,7 @@ public class EditorActivity extends AppCompatActivity implements
         Toast.makeText(this, getString(R.string.editor_edit_mode_on),
                 Toast.LENGTH_SHORT).show();
         setTitle(R.string.editor_activity_title_edit_item);
+        image_header.setText(R.string.category_image_edit);
     }
     private void goToViewMode() {
         enableAllViews(false);
@@ -832,6 +844,7 @@ public class EditorActivity extends AppCompatActivity implements
         Toast.makeText(this, getString(R.string.editor_edit_mode_off),
                 Toast.LENGTH_SHORT).show();
         setTitle(R.string.editor_activity_title_view_item);
+        image_header.setText(R.string.category_image);
     }
 
     /** enable - disable all edit fields
@@ -851,6 +864,7 @@ public class EditorActivity extends AppCompatActivity implements
         }
         mOwnerSpinner.setEnabled(enableDisable); //method doesn't work for spinner - so fix with hardcode
         mImageView.setEnabled(enableDisable); //method doesn't work for image - so fix with hardcode
+        mBarcodeButton.setEnabled(enableDisable); //method doesn't work for button - so fix with hardcode
 
     }
 

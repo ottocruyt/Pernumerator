@@ -149,6 +149,14 @@ public final class ItemContract {
          */
         public final static String COLUMN_ITEM_IMG = "image";
 
+        /**
+         *
+         * barcode of the item
+         *
+         * Type: STRING (because no calc will be done on the number)
+         *
+         */
+        public final static String COLUMN_ITEM_BARCODE = "barcode";
 
 
 

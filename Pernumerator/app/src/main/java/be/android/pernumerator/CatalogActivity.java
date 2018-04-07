@@ -41,12 +41,12 @@ import be.android.pernumerator.data.ItemContract;
 import be.android.pernumerator.data.ItemImageHandler;
 
 //TODO add type spinner with possibility of adding a new one
-//TODO add barcode field
 //TODO database update handler
-//TODO make clear that image is clickable -> elevation did not work
 //TODO check if refactoring is needed
 //TODO implement search
 //TODO add preferences (via preferences API) to get use flash or not
+//TODO catalog view grouping of type
+
 
 /**
  * Displays list of items that were entered and stored in the app.
@@ -154,6 +154,7 @@ public class CatalogActivity extends AppCompatActivity implements
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_DIM_W, 0.10);
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_DIM_H, 0.002);
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_IMG, ItemImageHandler.getBytes(bitmap));
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_BARCODE, "12345678910");
 
         // Insert a new row for Oneplus into the provider using the ContentResolver.
         // Use the {@link ItemEntry#CONTENT_URI} to indicate that we want to insert
