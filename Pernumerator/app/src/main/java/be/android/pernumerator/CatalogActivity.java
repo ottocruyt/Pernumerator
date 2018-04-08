@@ -45,7 +45,7 @@ import be.android.pernumerator.data.ItemImageHandler;
 //TODO check if refactoring is needed
 //TODO implement search
 //TODO add preferences (via preferences API) to get use flash or not
-//TODO catalog view grouping of type
+//TODO change catalog to only show one type (selected in the TypeActivity)
 
 
 /**
