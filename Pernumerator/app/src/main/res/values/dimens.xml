@@ -12,8 +12,8 @@
 <resources>
     <!-- Margin around the floating action button in CatalogActivity -->
     <dimen name="fab_margin">16dp</dimen>
-
     <!-- Common margin value used throughout the app -->
     <dimen name="activity_margin">5dp</dimen>
+    <dimen name="activity_type_margin">20dp</dimen>
 </resources>
 

@@ -173,7 +173,7 @@
     <string name="default_image_catalog">Picture shown when no items in database.</string>
     <string name="barcode_detection_result">Barcode: </string>
     <string name="barcode_detection_type">Detected Type: </string>
-    <string name="title_activity_type">TypeActivity</string>
+    <string name="title_activity_type">Pernumerator</string>
 
 
 </resources>

@@ -16,6 +16,7 @@
 package be.android.pernumerator;
 
 import android.app.LoaderManager;
+import android.content.ClipData;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
@@ -38,7 +39,9 @@ import android.widget.ListView;
 import java.io.IOException;
 
 import be.android.pernumerator.data.ItemContract;
+import be.android.pernumerator.data.ItemDbHelper;
 import be.android.pernumerator.data.ItemImageHandler;
+import be.android.pernumerator.data.ItemProvider;
 
 //TODO add type spinner with possibility of adding a new one
 //TODO database update handler
@@ -56,6 +59,10 @@ public class CatalogActivity extends AppCompatActivity implements
 
     /** Identifier for the item data loader */
     private static final int ITEM_LOADER = 0;
+    private static final int TYPE_LOADER = 1;
+    private Uri mCurrentItemUri;
+    private String mWhichClickListener;
+    private String mDisplayType;
 
     /** Adapter for the ListView */
     ItemCursorAdapter mCursorAdapter;
@@ -81,6 +88,10 @@ public class CatalogActivity extends AppCompatActivity implements
         // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
         View emptyView = findViewById(R.id.empty_view);
         itemListView.setEmptyView(emptyView);
+
+        Intent intent = getIntent();
+        mCurrentItemUri = intent.getData();
+        mWhichClickListener = intent.getStringExtra("whichClickListener");
 
         // Setup an Adapter to create a list item for each row of item data in the Cursor.
         // There is no item data yet (until the loader finishes) so pass in null for the Cursor.
@@ -134,7 +145,7 @@ public class CatalogActivity extends AppCompatActivity implements
 
 
         // Kick off the loader
-        getLoaderManager().initLoader(ITEM_LOADER, null, this);
+        getLoaderManager().initLoader(TYPE_LOADER, null, this);
     }
 
     /**
@@ -208,27 +219,58 @@ public class CatalogActivity extends AppCompatActivity implements
                 ItemContract.ItemEntry.COLUMN_ITEM_NAME,
                 ItemContract.ItemEntry.COLUMN_ITEM_TYPE };
         // Define the sort method of the query
-
         String sortOrder = ItemContract.ItemEntry.COLUMN_ITEM_TYPE;
 
-        // This loader will execute the ContentProvider's query method on a background thread
-        return new CursorLoader(this,   // Parent activity context
-                ItemContract.ItemEntry.CONTENT_URI,   // Provider content URI to query
-                projection,             // Columns to include in the resulting Cursor
-                null,                   // No selection clause
-                null,                   // No selection arguments
-                sortOrder);                  // Default sort order
+        switch(i) {
+            case(ITEM_LOADER):
+                String selectionItem = ItemContract.ItemEntry.COLUMN_ITEM_TYPE + "='" + mDisplayType +"'";
+                // This loader will execute the ContentProvider's query method on a background thread
+                return new CursorLoader(this,   // Parent activity context
+                        ItemContract.ItemEntry.CONTENT_URI,   // Provider content URI to query
+                        projection,             // Columns to include in the resulting Cursor
+                        selectionItem,                   // No selection clause
+                        null,                   // No selection arguments
+                        sortOrder);                  // Default sort order
+
+            case(TYPE_LOADER):
+                String idOfClickedItem = String.valueOf(ContentUris.parseId(mCurrentItemUri));
+                String selectionType = ItemContract.ItemEntry._ID + "=" + idOfClickedItem;
+                return new CursorLoader(this,ItemContract.ItemEntry.CONTENT_URI,projection,selectionType,null,sortOrder);
+            default:
+                return null;
+
+        }
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // Update {@link ItemCursorAdapter} with this new cursor containing updated item data
-        mCursorAdapter.swapCursor(data);
+        switch(loader.getId()){
+            case(ITEM_LOADER):
+                mCursorAdapter.swapCursor(data);
+                break;
+            case(TYPE_LOADER):
+                if (data.moveToFirst()) {
+                    int typeColumnIndex = data.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_TYPE);
+                    String type = data.getString(typeColumnIndex);
+                    mDisplayType = type;
+                    getLoaderManager().initLoader(ITEM_LOADER, null, this);
+                }
+                break;
+        }
+
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         // Callback called when the data needs to be deleted
-        mCursorAdapter.swapCursor(null);
+        switch(loader.getId()){
+            case(ITEM_LOADER):
+                mCursorAdapter.swapCursor(null);
+                break;
+            case(TYPE_LOADER):
+                break;
+        }
+
     }
 }

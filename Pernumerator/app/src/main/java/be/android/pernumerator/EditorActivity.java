@@ -1,6 +1,7 @@
 package be.android.pernumerator;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
@@ -11,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -105,6 +105,7 @@ public class EditorActivity extends AppCompatActivity implements
 
     /** EditText field to enter the item's owner */
     private Spinner mOwnerSpinner;
+    private String mCurrentItemId;
 
     /**
      * Owner of the item. The possible valid values are in the ItemContract.java file:
@@ -490,7 +491,7 @@ public class EditorActivity extends AppCompatActivity implements
                 // If the item hasn't changed, continue with navigating up to parent activity
                 // which is the {@link CatalogActivity}.
                 if (!mItemHasChanged) {
-                    NavUtils.navigateUpFromSameTask(EditorActivity.this);
+                    super.onBackPressed();
                     return true;
                 }
 
@@ -502,7 +503,7 @@ public class EditorActivity extends AppCompatActivity implements
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // User clicked "Discard" button, navigate to parent activity.
-                                NavUtils.navigateUpFromSameTask(EditorActivity.this);
+                                EditorActivity.super.onBackPressed();
                             }
                         };
 
@@ -519,7 +520,12 @@ public class EditorActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
         // If the item hasn't changed, continue with handling back button press
-        if (!mItemHasChanged) {
+         if (!mItemHasChanged) {
+            /*Intent intent = new Intent(EditorActivity.this, CatalogActivity.class);
+            Uri currentItemUri = ContentUris.withAppendedId(ItemContract.ItemEntry.CONTENT_URI, Integer.valueOf(mCurrentItemId));
+            intent.setData(currentItemUri);
+            startActivity(intent);
+            */
             super.onBackPressed();
             return;
         }
@@ -576,6 +582,7 @@ public class EditorActivity extends AppCompatActivity implements
         // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
             // Find the columns of item attributes that we're interested in
+            int idColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry._ID);
             int nameColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_NAME);
             int typeColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_TYPE);
             int ownerColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_OWNER);
@@ -588,6 +595,7 @@ public class EditorActivity extends AppCompatActivity implements
             int barcodeColumnIndex = cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_BARCODE);
 
             // Extract out the value from the Cursor for the given column index
+            mCurrentItemId = cursor.getString(idColumnIndex);
             String name = cursor.getString(nameColumnIndex);
             String type = cursor.getString(typeColumnIndex);
             int owner = cursor.getInt(ownerColumnIndex);

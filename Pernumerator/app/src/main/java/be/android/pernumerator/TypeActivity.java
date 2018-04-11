@@ -65,13 +65,9 @@ public class TypeActivity extends AppCompatActivity  implements
                 // {@link ItemEntry#CONTENT_URI}.
                 // For example, the URI would be "content://be.android.pernumerator/be.android.pernumerator/2"
                 // if the item with ID 2 was clicked on.
-                /**
                 Uri currentItemUri = ContentUris.withAppendedId(ItemContract.ItemEntry.CONTENT_URI, id);
-                 */
                 // Set the URI on the data field of the intent
-                /**
-                *intent.setData(currentItemUri);
-                */
+                intent.setData(currentItemUri);
                 // Launch the {@link CatalogActivity} to display the data for the current item.
                 startActivity(intent);
             }
