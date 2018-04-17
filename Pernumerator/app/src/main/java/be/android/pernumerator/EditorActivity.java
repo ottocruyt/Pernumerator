@@ -1,4 +1,5 @@
 package be.android.pernumerator;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentUris;
@@ -8,11 +9,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -40,10 +43,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import be.android.pernumerator.data.ItemContract;
+import be.android.pernumerator.data.ItemDbHelper;
 import be.android.pernumerator.data.ItemImageHandler;
+import be.android.pernumerator.data.ItemProvider;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
 
@@ -58,6 +65,7 @@ public class EditorActivity extends AppCompatActivity implements
 
     /** Identifier for the item data loader */
     private static final int EXISTING_ITEM_LOADER = 0;
+    private static final int TYPES_LOADER = 1;
 
     /** Action type requested for item image selection */
     private final int SELECT_PHOTO = 1; // for gallery picker, used in switch case
@@ -82,9 +90,6 @@ public class EditorActivity extends AppCompatActivity implements
     /** EditText field to enter the item's name */
     private EditText mNameEditText;
 
-    /** EditText field to enter the item's type */
-    private EditText mTypeEditText;
-
     /** EditText field to enter the item's weight */
     private EditText mWeightEditText;
 
@@ -105,6 +110,7 @@ public class EditorActivity extends AppCompatActivity implements
 
     /** EditText field to enter the item's owner */
     private Spinner mOwnerSpinner;
+    private Spinner mTypeSpinner;
     private String mCurrentItemId;
 
     /**
@@ -113,6 +119,8 @@ public class EditorActivity extends AppCompatActivity implements
      * {@link ItemContract.ItemEntry#OWNER_OTHER}.
      */
     private int mOwner = ItemContract.ItemEntry.OWNER_BOTH;
+    private String mType = "Unknown Type";
+    private String newType = "Unknown Type";
 
     /** Boolean flag that keeps track of whether the item has been edited (true) or not (false) */
     private boolean mItemHasChanged = false;
@@ -178,9 +186,9 @@ public class EditorActivity extends AppCompatActivity implements
         image_header = findViewById(R.id.category_image_text);
         // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById(R.id.edit_item_name);
-        mTypeEditText = (EditText) findViewById(R.id.edit_item_type);
         mWeightEditText = (EditText) findViewById(R.id.edit_item_weight);
         mOwnerSpinner = (Spinner) findViewById(R.id.spinner_owner);
+        mTypeSpinner = (Spinner) findViewById(R.id.spinner_type);
         mPriceEditText = (EditText) findViewById(R.id.edit_item_price);
         mLengthEditText = (EditText) findViewById(R.id.edit_item_length);
         mWidthEditText = (EditText) findViewById(R.id.edit_item_width);
@@ -192,7 +200,6 @@ public class EditorActivity extends AppCompatActivity implements
         // has touched or modified them. This will let us know if there are unsaved changes
         // or not, if the user tries to leave the editor without saving.
         mNameEditText.setOnTouchListener(mTouchListener);
-        mTypeEditText.setOnTouchListener(mTouchListener);
         mWeightEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
         mLengthEditText.setOnTouchListener(mTouchListener);
@@ -200,6 +207,7 @@ public class EditorActivity extends AppCompatActivity implements
         mHeightEditText.setOnTouchListener(mTouchListener);
         mBarcodeEditText.setOnTouchListener(mTouchListener);
         mOwnerSpinner.setOnTouchListener(mTouchListener);
+        mTypeSpinner.setOnTouchListener(mTouchListener);
         mImageView.setOnTouchListener(mTouchListener);
 
         // Setup OnClickListener for starting image picker
@@ -209,6 +217,7 @@ public class EditorActivity extends AppCompatActivity implements
         registerForContextMenu(mImageView);
 
         setupSpinner();
+        setupTypeSpinner();
     }
 
     /**
@@ -251,6 +260,59 @@ public class EditorActivity extends AppCompatActivity implements
             }
         });
     }
+    /**
+     * Setup the dropdown spinner that allows the user to select the owner of the item.
+     */
+    private void setupTypeSpinner() {
+        // Create adapter for spinner. The list options are from the arrayList it will use
+        // the spinner will use the default layout
+        final ArrayList<String> arrayTypeOptions = getAllTypes();
+        ArrayAdapter<String> typeSpinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,arrayTypeOptions);
+        // Specify dropdown layout style - simple list view with 1 item per line
+        typeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+        // Apply the adapter to the spinner
+        mTypeSpinner.setAdapter(typeSpinnerAdapter);
+        mTypeSpinner.setSelection(((ArrayAdapter)mTypeSpinner.getAdapter()).getPosition("Unknown Type"));
+        mTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                String selectedItem = parent.getItemAtPosition(position).toString();
+                if(selectedItem.equals("Add New Type"))
+                {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(EditorActivity.this);
+                    builder.setTitle("New Type");
+
+                    // Set up the input
+                    final EditText input = new EditText(EditorActivity.this);
+                    // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+                    input.setInputType(InputType.TYPE_CLASS_TEXT);
+                    builder.setView(input);
+
+                    // Set up the buttons
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            newType = input.getText().toString();
+                            arrayTypeOptions.add(newType);
+                            mTypeSpinner.setSelection(((ArrayAdapter)mTypeSpinner.getAdapter()).getPosition(newType));
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    builder.show();
+                }
+            } // to close the onItemSelected
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+
+            }
+        });
+    }
 
     /**
      * Get user input from editor and save item into database.
@@ -262,7 +324,6 @@ public class EditorActivity extends AppCompatActivity implements
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
-        String typeString = mTypeEditText.getText().toString().trim();
         String weightString = mWeightEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
         String lengthString = mLengthEditText.getText().toString().trim();
@@ -277,7 +338,7 @@ public class EditorActivity extends AppCompatActivity implements
         // Check if this is supposed to be a new item
         // and check if all the fields in the editor are blank
         if (mCurrentItemUri == null &&
-                TextUtils.isEmpty(nameString) && TextUtils.isEmpty(typeString) &&
+                TextUtils.isEmpty(nameString) &&
                 TextUtils.isEmpty(weightString) && mOwner == ItemContract.ItemEntry.OWNER_BOTH &&
                 TextUtils.isEmpty(priceString) && TextUtils.isEmpty(lengthString) &&
                 TextUtils.isEmpty(widthString) && TextUtils.isEmpty(heightString) && mImageNewSelected == null
@@ -300,8 +361,9 @@ public class EditorActivity extends AppCompatActivity implements
 
         ContentValues values = new ContentValues();
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_NAME, nameString);
-        values.put(ItemContract.ItemEntry.COLUMN_ITEM_TYPE, typeString);
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_OWNER, mOwner);
+        mType = mTypeSpinner.getSelectedItem().toString();
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_TYPE,mType);
         // If the weight is not provided by the user, don't try to parse the string into an
         // float value. Use 0 by default.
         float weight = 0;
@@ -547,28 +609,34 @@ public class EditorActivity extends AppCompatActivity implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        // Since the editor shows all item attributes, define a projection that contains
-        // all columns from the items table
-        String[] projection = {
-                ItemContract.ItemEntry._ID,
-                ItemContract.ItemEntry.COLUMN_ITEM_NAME,
-                ItemContract.ItemEntry.COLUMN_ITEM_TYPE,
-                ItemContract.ItemEntry.COLUMN_ITEM_OWNER,
-                ItemContract.ItemEntry.COLUMN_ITEM_WEIGHT,
-                ItemContract.ItemEntry.COLUMN_ITEM_PRICE,
-                ItemContract.ItemEntry.COLUMN_ITEM_DIM_L,
-                ItemContract.ItemEntry.COLUMN_ITEM_DIM_W,
-                ItemContract.ItemEntry.COLUMN_ITEM_DIM_H,
-                ItemContract.ItemEntry.COLUMN_ITEM_IMG,
-                ItemContract.ItemEntry.COLUMN_ITEM_BARCODE};
+        switch(i){
+            case EXISTING_ITEM_LOADER:
+                // Since the editor shows all item attributes, define a projection that contains
+                // all columns from the items table
+                String[] projection = {
+                        ItemContract.ItemEntry._ID,
+                        ItemContract.ItemEntry.COLUMN_ITEM_NAME,
+                        ItemContract.ItemEntry.COLUMN_ITEM_TYPE,
+                        ItemContract.ItemEntry.COLUMN_ITEM_OWNER,
+                        ItemContract.ItemEntry.COLUMN_ITEM_WEIGHT,
+                        ItemContract.ItemEntry.COLUMN_ITEM_PRICE,
+                        ItemContract.ItemEntry.COLUMN_ITEM_DIM_L,
+                        ItemContract.ItemEntry.COLUMN_ITEM_DIM_W,
+                        ItemContract.ItemEntry.COLUMN_ITEM_DIM_H,
+                        ItemContract.ItemEntry.COLUMN_ITEM_IMG,
+                        ItemContract.ItemEntry.COLUMN_ITEM_BARCODE};
 
-        // This loader will execute the ContentProvider's query method on a background thread
-        return new CursorLoader(this,   // Parent activity context
-                mCurrentItemUri,         // Query the content URI for the current item
-                projection,             // Columns to include in the resulting Cursor
-                null,                   // No selection clause
-                null,                   // No selection arguments
-                null);                  // Default sort order
+                // This loader will execute the ContentProvider's query method on a background thread
+                return new CursorLoader(this,   // Parent activity context
+                        mCurrentItemUri,         // Query the content URI for the current item
+                        projection,             // Columns to include in the resulting Cursor
+                        null,                   // No selection clause
+                        null,                   // No selection arguments
+                        null);                  // Default sort order
+            default:
+                return null;
+            }
+
     }
 
     @Override
@@ -620,7 +688,6 @@ public class EditorActivity extends AppCompatActivity implements
             String formattedHeight = dimFormat.format(height);
             //set the text
             mNameEditText.setText(name);
-            mTypeEditText.setText(type);
             mWeightEditText.setText(formattedWeight);
             mPriceEditText.setText(formattedPrice);
             mLengthEditText.setText(formattedLength);
@@ -651,6 +718,11 @@ public class EditorActivity extends AppCompatActivity implements
                     mOwnerSpinner.setSelection(0);
                     break;
             }
+            if(type!=null){
+                mTypeSpinner.setSelection(((ArrayAdapter)mTypeSpinner.getAdapter()).getPosition(type));
+            } else {
+                mTypeSpinner.setSelection(((ArrayAdapter)mTypeSpinner.getAdapter()).getPosition("Unknown Type"));
+            }
         }
 
         // should be either in view mode if coming from short click, or edit mode coming from long click
@@ -673,7 +745,6 @@ public class EditorActivity extends AppCompatActivity implements
     public void onLoaderReset(Loader<Cursor> loader) {
         // If the loader is invalidated, clear out all the data from the input fields.
         mNameEditText.setText("");
-        mTypeEditText.setText("");
         mWeightEditText.setText("");
         mPriceEditText.setText("");
         mLengthEditText.setText("");
@@ -681,6 +752,7 @@ public class EditorActivity extends AppCompatActivity implements
         mHeightEditText.setText("");
         mImageView.setImageResource(R.drawable.ic_box_empty); // Select default empty box
         mOwnerSpinner.setSelection(0); // Select "Unknown" gender
+        mTypeSpinner.setSelection(((ArrayAdapter)mTypeSpinner.getAdapter()).getPosition("Unknown Type"));
         mBarcodeEditText.setText("");
     }
 
@@ -871,6 +943,7 @@ public class EditorActivity extends AppCompatActivity implements
               //  child.setEnabled(enableDisable);
         }
         mOwnerSpinner.setEnabled(enableDisable); //method doesn't work for spinner - so fix with hardcode
+        mTypeSpinner.setEnabled(enableDisable);
         mImageView.setEnabled(enableDisable); //method doesn't work for image - so fix with hardcode
         mBarcodeButton.setEnabled(enableDisable); //method doesn't work for button - so fix with hardcode
 
@@ -916,5 +989,40 @@ public class EditorActivity extends AppCompatActivity implements
             startActivityForResult(intent, RC_BARCODE_CAPTURE);
         }
 
+    }
+    public ArrayList<String> getAllTypes(){
+        ArrayList<String> typeArray = new ArrayList<String>();
+        // This cursor will hold the result of the query
+        Cursor cursor;
+        String[] projection = {ItemContract.ItemEntry.COLUMN_ITEM_TYPE};
+        // Define the sort method of the query
+        String sortOrder = ItemContract.ItemEntry.COLUMN_ITEM_TYPE;
+        String groupBy = ItemContract.ItemEntry.COLUMN_ITEM_TYPE;
+        //query the items table directly with the given
+        // projection, selection, selection arguments, and sort order. The cursor
+        // could contain multiple rows of the items table.
+        cursor = getContentResolver().query(ItemContract.ItemEntry.CONTENT_URI, projection,
+                null,
+                null,
+                sortOrder,
+                null);
+
+        if(cursor.moveToFirst()){
+            do{
+                String data = cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_TYPE));
+                typeArray.add(data);
+            }while(cursor.moveToNext());
+
+        }
+        typeArray.add("Unknown Type");
+        //create hashset to remove duplicates
+        HashSet<String> hashSet = new HashSet<String>();
+        hashSet.addAll(typeArray);
+        typeArray.clear();
+        typeArray.addAll(hashSet);
+        Collections.sort(typeArray);
+        typeArray.add(0,"Add New Type");
+        cursor.close();
+        return typeArray;
     }
 }

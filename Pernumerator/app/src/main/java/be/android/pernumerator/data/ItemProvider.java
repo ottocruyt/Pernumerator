@@ -37,6 +37,8 @@ public class ItemProvider extends ContentProvider {
 
     /** URI matcher code for the content URI for a single item in the items table */
     private static final int ITEM_ID = 101;
+    private static final int TYPES = 102;
+
 
     /**
      * UriMatcher object to match a content URI to a corresponding code.
@@ -111,6 +113,7 @@ public class ItemProvider extends ContentProvider {
                 cursor = database.query(ItemContract.ItemEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
+
             default:
                 throw new IllegalArgumentException("Cannot query unknown URI " + uri);
         }

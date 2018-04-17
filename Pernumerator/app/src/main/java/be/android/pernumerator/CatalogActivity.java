@@ -193,6 +193,7 @@ public class CatalogActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // User clicked on a menu option in the app bar overflow menu
+
         switch (item.getItemId()) {
             // Respond to a click on the "Insert dummy data" menu option
             case R.id.action_insert_dummy_data:
@@ -207,9 +208,14 @@ public class CatalogActivity extends AppCompatActivity implements
             case R.id.action_delete_all_entries:
                 deleteAllItems();
                 return true;
+            case android.R.id.home:
+                Intent homeIntent = new Intent(this, TypeActivity.class);
+                homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(homeIntent);
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -254,6 +260,8 @@ public class CatalogActivity extends AppCompatActivity implements
                     int typeColumnIndex = data.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_TYPE);
                     String type = data.getString(typeColumnIndex);
                     mDisplayType = type;
+                    android.support.v7.app.ActionBar mActionBar = getSupportActionBar();
+                    mActionBar.setTitle(mDisplayType);
                     getLoaderManager().initLoader(ITEM_LOADER, null, this);
                 }
                 break;
@@ -273,4 +281,5 @@ public class CatalogActivity extends AppCompatActivity implements
         }
 
     }
+
 }
