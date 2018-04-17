@@ -773,6 +773,7 @@ public class EditorActivity extends AppCompatActivity implements
                         final Uri imageUri = intent.getData();
                         final InputStream imageStream = getContentResolver().openInputStream(imageUri);
                         final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+
                         mImageView.setImageBitmap(selectedImage);
                         mImageNewSelected = selectedImage;
                     } catch (FileNotFoundException e) {
@@ -795,6 +796,7 @@ public class EditorActivity extends AppCompatActivity implements
                             File pickedImage = imageFiles.get(0); //only take the first element of the list
                             String filePath = pickedImage.getPath();
                             Bitmap bitmapPickedImage = BitmapFactory.decodeFile(filePath);
+                            bitmapPickedImage = ItemImageHandler.resizeBitmap(bitmapPickedImage,250);
                             mImageView.setImageBitmap(bitmapPickedImage);
                             mImageNewSelected = bitmapPickedImage;
                         }
