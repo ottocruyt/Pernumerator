@@ -19,6 +19,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
+import android.util.Log;
+import java.io.File;
+import java.io.FileWriter;
 
 /**
  * Database helper for Pernumerator app. Manages database creation and version management.
@@ -74,6 +78,58 @@ public class ItemDbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // The database is still at version 1, so there's nothing to do be done here.
+    }
+
+    public void exportDB() {
+        File exportDir = new File(Environment.getExternalStorageDirectory(), "");
+        if (!exportDir.exists())
+        {
+            exportDir.mkdirs();
+        }
+
+        File file = new File(exportDir, "pernumeratorExport.csv");
+        try
+        {
+            file.createNewFile();
+            CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
+            SQLiteDatabase db = getReadableDatabase();
+            String sqlString = "SELECT " +
+                    ItemContract.ItemEntry._ID + ", " +
+                    ItemContract.ItemEntry.COLUMN_ITEM_NAME + ", " +
+                    ItemContract.ItemEntry.COLUMN_ITEM_TYPE + ", " +
+                    ItemContract.ItemEntry.COLUMN_ITEM_OWNER + ", " +
+                    ItemContract.ItemEntry.COLUMN_ITEM_WEIGHT + ", " +
+                    ItemContract.ItemEntry.COLUMN_ITEM_PRICE + ", " +
+                    ItemContract.ItemEntry.COLUMN_ITEM_DIM_L + ", " +
+                    ItemContract.ItemEntry.COLUMN_ITEM_DIM_W + ", " +
+                    ItemContract.ItemEntry.COLUMN_ITEM_DIM_H + ", " +
+                    ItemContract.ItemEntry.COLUMN_ITEM_BARCODE + " FROM items";
+            Cursor curCSV = db.rawQuery(sqlString,null);
+            csvWrite.writeNext(curCSV.getColumnNames());
+            while(curCSV.moveToNext())
+            {
+                //Which column you want to exprort
+                String arrStr[] ={
+                        curCSV.getString(0),
+                        curCSV.getString(1),
+                        curCSV.getString(2),
+                        curCSV.getString(3),
+                        curCSV.getString(4),
+                        curCSV.getString(5),
+                        curCSV.getString(6),
+                        curCSV.getString(7),
+                        curCSV.getString(8),
+                        curCSV.getString(9),
+                };
+                csvWrite.writeNext(arrStr);
+            }
+            csvWrite.close();
+            curCSV.close();
+        }
+        catch(Exception sqlEx)
+        {
+            Log.e("ItemDbHelper", sqlEx.getMessage(), sqlEx);
+        }
     }
 
 

@@ -25,4 +25,8 @@
         android:id="@+id/action_delete_all_entries"
         android:title="@string/action_delete_all_entries"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_export_db"
+        android:title="@string/action_export_db"
+        app:showAsAction="never" />
 </menu>

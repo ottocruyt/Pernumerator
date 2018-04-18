@@ -175,6 +175,6 @@
     <string name="barcode_detection_type">Detected Type: </string>
     <string name="title_activity_type">Pernumerator</string>
     <string name="type_header">Type</string>
-
+    <string name="action_export_db">Export to CSV</string>
 
 </resources>

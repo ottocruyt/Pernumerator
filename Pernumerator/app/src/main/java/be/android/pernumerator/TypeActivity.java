@@ -1,11 +1,14 @@
 package be.android.pernumerator;
 
+import android.Manifest;
 import android.app.LoaderManager;
+import android.content.ClipData;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +16,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,8 +28,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 import be.android.pernumerator.data.ItemContract;
+import be.android.pernumerator.data.ItemDbHelper;
 import be.android.pernumerator.data.ItemImageHandler;
 
 public class TypeActivity extends AppCompatActivity  implements
@@ -32,6 +39,7 @@ public class TypeActivity extends AppCompatActivity  implements
 
     /** Identifier for the item data loader */
     private static final int ITEM_LOADER = 1;
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2;
     /** Adapter for the ListView */
     TypeCursorAdapter mCursorAdapter;
 
@@ -142,6 +150,17 @@ public class TypeActivity extends AppCompatActivity  implements
             case R.id.action_delete_all_entries:
                 deleteAllItems();
                 return true;
+            case R.id.action_export_db:
+                if (ContextCompat.checkSelfPermission(TypeActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(TypeActivity.this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                } else {
+                    ItemDbHelper helper = new ItemDbHelper(this);
+                    helper.exportDB();
+                }
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -187,6 +206,24 @@ public class TypeActivity extends AppCompatActivity  implements
         values3.put(ItemContract.ItemEntry.COLUMN_ITEM_IMG, ItemImageHandler.getBytes(bitmap3));
         values3.put(ItemContract.ItemEntry.COLUMN_ITEM_BARCODE, "147102357");
         Uri newUri3 = getContentResolver().insert(ItemContract.ItemEntry.CONTENT_URI, values3);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+        }
     }
 
 
